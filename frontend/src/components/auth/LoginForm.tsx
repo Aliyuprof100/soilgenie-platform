@@ -1,9 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import PasswordInput from "./PasswordInput";
-import { login } from "../../services/auth";
+import { useAuth } from "../../context/AuthContext";
 
 export default function LoginForm() {
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
+
   const [email, setEmail] = useState("");
+
   const [password, setPassword] = useState("");
 
   async function handleSubmit(
@@ -12,19 +19,19 @@ export default function LoginForm() {
     e.preventDefault();
 
     try {
-      const data = await login(email, password);
+      await login(email, password);
 
-      localStorage.setItem(
-        "access",
-        data.access
+      const user = JSON.parse(
+        localStorage.getItem("user") || "null"
       );
 
-      localStorage.setItem(
-        "refresh",
-        data.refresh
-      );
-
-      alert("Login successful!");
+      if (user?.role === "ADMIN") {
+        navigate("/admin");
+      } else if (user?.role === "AGENT") {
+        navigate("/agent");
+      } else {
+        navigate("/farmer");
+      }
     } catch {
       alert("Invalid credentials.");
     }
@@ -36,6 +43,7 @@ export default function LoginForm() {
       className="space-y-5"
     >
       <input
+        type="email"
         className="w-full rounded-xl border p-3"
         placeholder="Email Address"
         value={email}
@@ -54,7 +62,6 @@ export default function LoginForm() {
       >
         Sign In
       </button>
-
     </form>
   );
 }

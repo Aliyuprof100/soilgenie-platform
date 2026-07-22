@@ -19,7 +19,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
   logout: () => void;
 }
 
@@ -34,18 +34,26 @@ export function AuthProvider({
 
   const [loading, setLoading] = useState(true);
 
-  async function login(email: string, password: string) {
+  async function login(email: string, password: string): Promise<User> {
     const data = await loginService(email, password);
 
     localStorage.setItem("access", data.access);
     localStorage.setItem("refresh", data.refresh);
 
+    localStorage.setItem(
+      "user",
+      JSON.stringify(data.user)
+    );
+
     setUser(data.user);
+
+    return data.user;
   }
 
   function logout() {
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
+    localStorage.removeItem("user");
 
     setUser(null);
   }
@@ -61,7 +69,6 @@ export function AuthProvider({
 
       try {
         const user = await me(token);
-
         setUser(user);
       } catch {
         logout();
@@ -90,10 +97,11 @@ export function AuthProvider({
 export function useAuth() {
   const context = useContext(AuthContext);
 
-  if (!context)
+  if (!context) {
     throw new Error(
       "useAuth must be used inside AuthProvider."
     );
+  }
 
   return context;
 }
