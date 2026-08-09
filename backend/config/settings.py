@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'apps.notifications',
     'apps.weather',
     'apps.reports',
-    'apps.core'
+    'apps.core',
+    'apps.farmers',
     
 ]
 

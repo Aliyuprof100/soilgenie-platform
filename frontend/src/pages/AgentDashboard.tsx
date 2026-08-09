@@ -1,120 +1,147 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import DashboardLayout from "../components/dashboard/DashboardLayout";
+import StatCard from "../components/dashboard/StatCard";
+
+import { getFarmerStatistics } from "../services/farmers";
 
 export default function AgentDashboard() {
+  const [myFarmers, setMyFarmers] = useState(0);
+  const [totalFarmers, setTotalFarmers] = useState(0);
+
+  const [loadingFarmers, setLoadingFarmers] = useState(true);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function loadFarmerStatistics() {
+      try {
+        const data = await getFarmerStatistics();
+
+        setMyFarmers(data.my_farmers_count);
+        setTotalFarmers(data.total_farmers_count);
+      } catch (error) {
+        console.error(
+          "Failed to load farmer statistics:",
+          error
+        );
+      } finally {
+        setLoadingFarmers(false);
+      }
+    }
+
+    loadFarmerStatistics();
+  }, []);
+
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      {/* Welcome Section */}
+      <div>
+        <h1 className="text-4xl font-bold">
+          Good Morning 👋
+        </h1>
 
-        <div>
-          <h2 className="text-3xl font-bold">
-            Good Morning 👋
-          </h2>
+        <p className="text-slate-500">
+          Welcome back to SoilGenie.
+        </p>
+      </div>
 
-          <p className="text-slate-500">
-            Welcome back to SoilGenie.
-          </p>
-        </div>
+      {/* Statistics */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          title="My Farmers"
+          value={
+            loadingFarmers
+              ? "..."
+              : String(myFarmers)
+          }
+        />
 
-        {/* Statistics */}
+        <StatCard
+          title="Total Farmers"
+          value={
+            loadingFarmers
+              ? "..."
+              : String(totalFarmers)
+          }
+        />
 
-        <div className="grid grid-cols-4 gap-6">
+        <StatCard
+          title="Farms"
+          value="489"
+        />
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h3 className="text-sm text-slate-500">
-              Farmers
-            </h3>
+        <StatCard
+          title="Soil Samples"
+          value="138"
+        />
+      </div>
 
-            <p className="mt-3 text-4xl font-bold text-green-700">
-              250
-            </p>
-          </div>
+      {/* Pending Reports */}
+      <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+        <StatCard
+          title="Pending Reports"
+          value="19"
+        />
+      </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h3 className="text-sm text-slate-500">
-              Farms
-            </h3>
+      {/* Quick Actions */}
+      <div className="mt-8 rounded-2xl border bg-white p-8 shadow-sm">
+        <h2 className="mb-6 text-2xl font-bold">
+          Quick Actions
+        </h2>
 
-            <p className="mt-3 text-4xl font-bold text-green-700">
-              489
-            </p>
-          </div>
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h3 className="text-sm text-slate-500">
-              Soil Samples
-            </h3>
+          {/* Register Farmer */}
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/agent/farmers/register")
+            }
+            className="rounded-xl bg-green-700 p-4 font-semibold text-white hover:bg-green-800"
+          >
+            Register Farmer
+          </button>
 
-            <p className="mt-3 text-4xl font-bold text-green-700">
-              138
-            </p>
-          </div>
 
-          <div className="rounded-2xl bg-white p-6 shadow">
-            <h3 className="text-sm text-slate-500">
-              Pending Reports
-            </h3>
+          {/* Register Farm */}
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/farms/register")
+            }
+            className="rounded-xl bg-blue-600 p-4 font-semibold text-white hover:bg-blue-700"
+          >
+            Register Farm
+          </button>
 
-            <p className="mt-3 text-4xl font-bold text-green-700">
-              19
-            </p>
-          </div>
 
-        </div>
+          {/* Record Soil Sample */}
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/soil-samples/register")
+            }
+            className="rounded-xl bg-orange-500 p-4 font-semibold text-white hover:bg-orange-600"
+          >
+            Record Soil Sample
+          </button>
 
-        {/* Quick Actions */}
 
-        <div className="rounded-2xl bg-white p-6 shadow">
-
-          <h3 className="mb-5 text-xl font-bold">
-            Quick Actions
-          </h3>
-
-          <div className="grid grid-cols-4 gap-5">
-
-            <button className="rounded-xl bg-green-700 p-4 font-semibold text-white hover:bg-green-800">
-              Register Farmer
-            </button>
-
-            <button className="rounded-xl bg-blue-600 p-4 font-semibold text-white hover:bg-blue-700">
-              Register Farm
-            </button>
-
-            <button className="rounded-xl bg-orange-500 p-4 font-semibold text-white hover:bg-orange-600">
-              Record Soil Sample
-            </button>
-
-            <button className="rounded-xl bg-purple-600 p-4 font-semibold text-white hover:bg-purple-700">
-              Generate Report
-            </button>
-
-          </div>
-
-        </div>
-
-        {/* Recent Activities */}
-
-        <div className="rounded-2xl bg-white p-6 shadow">
-
-          <h3 className="mb-5 text-xl font-bold">
-            Recent Activities
-          </h3>
-
-          <ul className="space-y-3 text-slate-600">
-
-            <li>✅ Farmer Musa registered successfully.</li>
-
-            <li>✅ Soil Sample #103 uploaded.</li>
-
-            <li>✅ AI recommendation generated.</li>
-
-            <li>✅ Weather forecast updated.</li>
-
-            <li>✅ Farm inspection completed.</li>
-
-          </ul>
+          {/* Generate Report */}
+          <button
+            type="button"
+            onClick={() =>
+              navigate("/reports")
+            }
+            className="rounded-xl bg-purple-600 p-4 font-semibold text-white hover:bg-purple-700"
+          >
+            Generate Report
+          </button>
 
         </div>
-
       </div>
     </DashboardLayout>
   );
