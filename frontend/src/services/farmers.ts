@@ -9,6 +9,10 @@ export interface Farmer {
   registered_by: string;
   registered_by_name: string;
 
+  user_id?: string | null;
+  user_email?: string | null;
+  has_user_account?: boolean;
+
   first_name: string;
   last_name: string;
 
@@ -180,6 +184,27 @@ export async function getFarmer(
           `Bearer ${token}`,
       },
     }
+  );
+
+
+  return response.data;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| GET CURRENT FARMER PROFILE
+|--------------------------------------------------------------------------
+|
+| Returns the Farmer profile linked to the currently authenticated
+| FARMER account.
+|
+*/
+
+export async function getCurrentFarmer(): Promise<Farmer> {
+
+  const response = await api.get(
+    "/farmers/me/"
   );
 
 

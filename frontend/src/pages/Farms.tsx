@@ -17,6 +17,9 @@ export default function Farms() {
   const [cropFilter, setCropFilter] = useState("");
   const [gpsFilter, setGpsFilter] = useState("");
 
+  const [selectedFarm, setSelectedFarm] =
+    useState<Farm | null>(null);
+
   useEffect(() => {
     async function loadFarms() {
       try {
@@ -109,11 +112,22 @@ export default function Farms() {
       farm.longitude !== undefined
   ).length;
 
+  function handleFarmSelect(farm: Farm) {
+    setSelectedFarm(farm);
+  }
+
+  function handleViewFarm(farm: Farm) {
+    setSelectedFarm(farm);
+
+    navigate(`/agent/farms/${farm.id}`);
+  }
+
   return (
     <DashboardLayout>
       <div className="mx-auto max-w-7xl space-y-8">
 
         {/* Header */}
+
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
 
           <div>
@@ -139,9 +153,11 @@ export default function Farms() {
         </div>
 
         {/* Statistics */}
+
         <div className="grid gap-5 md:grid-cols-3">
 
           <div className="rounded-2xl border bg-white p-6 shadow-sm">
+
             <p className="text-sm text-slate-500">
               Total Farms
             </p>
@@ -149,9 +165,11 @@ export default function Farms() {
             <p className="mt-2 text-3xl font-bold text-slate-900">
               {farms.length}
             </p>
+
           </div>
 
           <div className="rounded-2xl border bg-white p-6 shadow-sm">
+
             <p className="text-sm text-slate-500">
               GPS Captured
             </p>
@@ -159,9 +177,11 @@ export default function Farms() {
             <p className="mt-2 text-3xl font-bold text-green-700">
               {farmsWithGPS}
             </p>
+
           </div>
 
           <div className="rounded-2xl border bg-white p-6 shadow-sm">
+
             <p className="text-sm text-slate-500">
               Showing
             </p>
@@ -169,19 +189,103 @@ export default function Farms() {
             <p className="mt-2 text-3xl font-bold text-slate-900">
               {filteredFarms.length}
             </p>
+
           </div>
-            {/* Farm Intelligence Map */}
+
         </div>
-        <FarmMap
-        farms={farms}
-        />
+
+        {/* Farm Intelligence Map */}
+
+        <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
+
+          <FarmMap
+            farms={filteredFarms}
+            selectedFarm={selectedFarm}
+            onFarmSelect={handleFarmSelect}
+          />
+
+        </div>
+
+        {/* Selected Farm */}
+
+        {selectedFarm && (
+          <div className="rounded-2xl border border-green-200 bg-green-50 p-6">
+
+            <div className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
+
+              <div>
+
+                <p className="text-sm font-semibold uppercase tracking-wide text-green-700">
+                  Selected Farm
+                </p>
+
+                <h2 className="mt-1 text-2xl font-bold text-green-950">
+                  {selectedFarm.farm_name}
+                </h2>
+
+                <p className="mt-1 text-sm text-green-800">
+                  {selectedFarm.farm_id}
+                </p>
+
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+
+                  <div>
+                    <p className="text-xs text-green-700">
+                      Farmer
+                    </p>
+
+                    <p className="font-semibold text-green-950">
+                      {selectedFarm.farmer_name}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-green-700">
+                      Location
+                    </p>
+
+                    <p className="font-semibold text-green-950">
+                      {selectedFarm.lga}, {selectedFarm.state}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="text-xs text-green-700">
+                      Farm Size
+                    </p>
+
+                    <p className="font-semibold text-green-950">
+                      {selectedFarm.farm_size} hectares
+                    </p>
+                  </div>
+
+                </div>
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  navigate(`/agent/farms/${selectedFarm.id}`)
+                }
+                className="rounded-xl bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800"
+              >
+                View Farm Profile →
+              </button>
+
+            </div>
+
+          </div>
+        )}
 
         {/* Filters */}
+
         <div className="rounded-2xl border bg-white p-6 shadow-sm">
 
           <div className="grid gap-4 md:grid-cols-3">
 
             <div>
+
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Search
               </label>
@@ -194,9 +298,11 @@ export default function Farms() {
                 placeholder="Farm ID, farm name, farmer, LGA..."
                 className="w-full rounded-xl border p-3 outline-none focus:border-green-600"
               />
+
             </div>
 
             <div>
+
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 Crop
               </label>
@@ -208,6 +314,7 @@ export default function Farms() {
                 }
                 className="w-full rounded-xl border bg-white p-3 outline-none focus:border-green-600"
               >
+
                 <option value="">
                   All Crops
                 </option>
@@ -220,10 +327,13 @@ export default function Farms() {
                     {crop}
                   </option>
                 ))}
+
               </select>
+
             </div>
 
             <div>
+
               <label className="mb-2 block text-sm font-medium text-slate-700">
                 GPS
               </label>
@@ -235,6 +345,7 @@ export default function Farms() {
                 }
                 className="w-full rounded-xl border bg-white p-3 outline-none focus:border-green-600"
               >
+
                 <option value="">
                   All Farms
                 </option>
@@ -246,7 +357,9 @@ export default function Farms() {
                 <option value="MISSING">
                   GPS Missing
                 </option>
+
               </select>
+
             </div>
 
           </div>
@@ -254,20 +367,25 @@ export default function Farms() {
         </div>
 
         {/* Error */}
+
         {error && (
           <div className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-700">
             {error}
           </div>
         )}
 
-        {/* Table */}
+        {/* Farm Table */}
+
         <div className="overflow-hidden rounded-2xl border bg-white shadow-sm">
 
           {loading ? (
+
             <div className="p-10 text-center text-slate-500">
               Loading farms...
             </div>
+
           ) : filteredFarms.length === 0 ? (
+
             <div className="p-10 text-center">
 
               <p className="text-lg font-semibold text-slate-700">
@@ -279,12 +397,15 @@ export default function Farms() {
               </p>
 
             </div>
+
           ) : (
+
             <div className="overflow-x-auto">
 
               <table className="w-full text-left">
 
                 <thead className="border-b bg-slate-50">
+
                   <tr>
 
                     <th className="px-6 py-4 text-sm font-semibold text-slate-600">
@@ -315,7 +436,12 @@ export default function Farms() {
                       Status
                     </th>
 
+                    <th className="px-6 py-4 text-sm font-semibold text-slate-600">
+                      Action
+                    </th>
+
                   </tr>
+
                 </thead>
 
                 <tbody className="divide-y">
@@ -328,10 +454,18 @@ export default function Farms() {
                       farm.longitude !== null &&
                       farm.longitude !== undefined;
 
+                    const isSelected =
+                      selectedFarm?.id === farm.id;
+
                     return (
+
                       <tr
                         key={farm.id}
-                        className="transition hover:bg-slate-50"
+                        className={`transition ${
+                          isSelected
+                            ? "bg-green-50"
+                            : "hover:bg-slate-50"
+                        }`}
                       >
 
                         <td className="px-6 py-5">
@@ -339,9 +473,7 @@ export default function Farms() {
                           <button
                             type="button"
                             onClick={() =>
-                              navigate(
-                                `/farms/${farm.id}`
-                              )
+                              handleFarmSelect(farm)
                             }
                             className="font-bold text-green-700 hover:underline"
                           >
@@ -385,13 +517,17 @@ export default function Farms() {
                         <td className="px-6 py-5">
 
                           {hasGPS ? (
+
                             <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">
                               📍 Captured
                             </span>
+
                           ) : (
+
                             <span className="rounded-full bg-yellow-100 px-3 py-1 text-xs font-semibold text-yellow-700">
                               Not captured
                             </span>
+
                           )}
 
                         </td>
@@ -410,7 +546,36 @@ export default function Farms() {
 
                         </td>
 
+                        <td className="px-6 py-5">
+
+                          <div className="flex gap-2">
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleFarmSelect(farm)
+                              }
+                              className="rounded-lg border px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                            >
+                              View on Map
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleViewFarm(farm)
+                              }
+                              className="rounded-lg bg-green-700 px-3 py-2 text-xs font-semibold text-white hover:bg-green-800"
+                            >
+                              Profile
+                            </button>
+
+                          </div>
+
+                        </td>
+
                       </tr>
+
                     );
                   })}
 
@@ -419,6 +584,7 @@ export default function Farms() {
               </table>
 
             </div>
+
           )}
 
         </div>

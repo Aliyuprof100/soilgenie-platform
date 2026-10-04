@@ -21,17 +21,52 @@ class Farmer(models.Model):
         ("INACTIVE", "Inactive"),
     )
 
+    # ============================================================
+    # FARMER IDENTIFICATION
+    # ============================================================
+
     farmer_id = models.CharField(
         max_length=20,
         unique=True,
         editable=False,
     )
 
+    # ============================================================
+    # FARMER LOGIN ACCOUNT
+    #
+    # Links this Farmer profile to the actual authenticated
+    # SoilGenie user account belonging to the farmer.
+    #
+    # This is intentionally optional because some farmers may
+    # initially be registered by field agents without having
+    # their own SoilGenie login account.
+    # ============================================================
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name="farmer_profile",
+        blank=True,
+        null=True,
+    )
+
+    # ============================================================
+    # REGISTERED BY
+    #
+    # This identifies the agent/admin who originally registered
+    # the farmer. It is different from the farmer's own user
+    # account above.
+    # ============================================================
+
     registered_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.PROTECT,
         related_name="registered_farmers",
     )
+
+    # ============================================================
+    # PERSONAL INFORMATION
+    # ============================================================
 
     first_name = models.CharField(
         max_length=100
@@ -66,6 +101,10 @@ class Farmer(models.Model):
         null=True,
     )
 
+    # ============================================================
+    # LOCATION
+    # ============================================================
+
     state = models.CharField(
         max_length=100
     )
@@ -90,6 +129,10 @@ class Farmer(models.Model):
         blank=True,
         null=True,
     )
+
+    # ============================================================
+    # FARMING INFORMATION
+    # ============================================================
 
     primary_crop = models.CharField(
         max_length=100,
@@ -121,6 +164,10 @@ class Farmer(models.Model):
         default="ACTIVE",
     )
 
+    # ============================================================
+    # TIMESTAMPS
+    # ============================================================
+
     created_at = models.DateTimeField(
         auto_now_add=True
     )
@@ -128,6 +175,10 @@ class Farmer(models.Model):
     updated_at = models.DateTimeField(
         auto_now=True
     )
+
+    # ============================================================
+    # AUTO-GENERATE FARMER ID
+    # ============================================================
 
     def save(self, *args, **kwargs):
 
@@ -140,7 +191,9 @@ class Farmer(models.Model):
             )
 
             if last_farmer:
-                next_number = last_farmer.id + 1
+                next_number = (
+                    last_farmer.id + 1
+                )
             else:
                 next_number = 1
 
@@ -148,7 +201,10 @@ class Farmer(models.Model):
                 f"SG-F-{next_number:06d}"
             )
 
-        super().save(*args, **kwargs)
+        super().save(
+            *args,
+            **kwargs
+        )
 
     def __str__(self):
         return (

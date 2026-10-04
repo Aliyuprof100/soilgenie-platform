@@ -10,7 +10,10 @@ import {
   LogOut,
 } from "lucide-react";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 
@@ -33,7 +36,7 @@ const menu = [
   {
     title: "Soil Samples",
     icon: FlaskConical,
-    path: "/agent/soil-samples",
+    path: "/agent/soil/samples",
   },
   {
     title: "Reports",
@@ -68,11 +71,10 @@ export default function Sidebar() {
   }
 
   return (
-    <aside className="flex h-screen w-64 flex-col border-r bg-white">
+    <aside className="flex h-full w-64 flex-col border-r bg-white">
 
       {/* Logo */}
       <div className="border-b p-6">
-
         <h1 className="text-2xl font-bold text-green-700">
           SoilGenie
         </h1>
@@ -80,7 +82,6 @@ export default function Sidebar() {
         <p className="text-sm text-slate-500">
           AI Precision Agriculture
         </p>
-
       </div>
 
       {/* Navigation */}
@@ -90,31 +91,31 @@ export default function Sidebar() {
           const Icon = item.icon;
 
           const isActive =
-            location.pathname === item.path;
+            location.pathname === item.path ||
+            (
+              item.path === "/agent/soil/samples" &&
+              location.pathname.startsWith(
+                "/agent/soil/samples"
+              )
+            );
 
           return (
-            
             <button
-  key={item.title}
-  onClick={() => {
-    if (item.title === "Farms") {
-      navigate("/agent/farms");
-    }
+              key={item.title}
+              type="button"
+              onClick={() => navigate(item.path)}
+              className={`flex w-full items-center gap-3 rounded-xl p-3 text-left font-medium transition ${
+                isActive
+                  ? "bg-green-100 text-green-700"
+                  : "text-slate-700 hover:bg-green-50 hover:text-green-700"
+              }`}
+            >
+              <Icon size={20} />
 
-    if (item.title === "Farmers") {
-      navigate("/agent/farmers");
-    }
-
-    if (item.title === "Dashboard") {
-      navigate("/agent");
-    }
-  }}
-  className="flex w-full items-center gap-3 rounded-xl p-3 text-left transition hover:bg-green-50 hover:text-green-700"
->
-  <Icon size={20} />
-
-  <span>{item.title}</span>
-</button>
+              <span>
+                {item.title}
+              </span>
+            </button>
           );
         })}
 
@@ -130,7 +131,9 @@ export default function Sidebar() {
         >
           <LogOut size={20} />
 
-          <span>Logout</span>
+          <span>
+            Logout
+          </span>
         </button>
 
       </div>

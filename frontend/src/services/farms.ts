@@ -1,5 +1,6 @@
 import api from "../api/api";
 
+
 export interface Farm {
   id: number;
   farm_id: string;
@@ -7,7 +8,7 @@ export interface Farm {
   farmer: number;
   farmer_name: string;
 
-  registered_by: number;
+  registered_by: number | string;
   registered_by_name: string;
 
   farm_name: string;
@@ -35,6 +36,7 @@ export interface Farm {
   updated_at: string;
 }
 
+
 export interface FarmFormData {
   farmer: number;
 
@@ -58,10 +60,16 @@ export interface FarmFormData {
   gps_accuracy: string;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| CREATE FARM
+|--------------------------------------------------------------------------
+*/
+
 export async function createFarm(
   data: FarmFormData
 ): Promise<Farm> {
-  const token = localStorage.getItem("access");
 
   const response = await api.post(
     "/farms/",
@@ -87,44 +95,52 @@ export async function createFarm(
         data.gps_accuracy === ""
           ? null
           : Number(data.gps_accuracy),
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
     }
   );
 
   return response.data;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| GET FARMS
+|--------------------------------------------------------------------------
+|
+| The backend applies role-aware filtering:
+|
+| ADMIN  -> all farms
+| AGENT  -> farms registered by the agent
+| FARMER -> only farms belonging to the authenticated farmer
+|
+*/
 
 export async function getFarms(): Promise<Farm[]> {
-  const token = localStorage.getItem("access");
 
   const response = await api.get(
-    "/farms/",
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    "/farms/"
   );
 
   return response.data;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| GET SINGLE FARM
+|--------------------------------------------------------------------------
+|
+| Backend ownership rules prevent a farmer from retrieving another
+| farmer's farm.
+|
+*/
 
 export async function getFarm(
   id: number
 ): Promise<Farm> {
-  const token = localStorage.getItem("access");
 
   const response = await api.get(
-    `/farms/${id}/`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
+    `/farms/${id}/`
   );
 
   return response.data;
