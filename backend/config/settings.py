@@ -398,44 +398,25 @@ SIMPLE_JWT = {
 }
 
 
-# ============================================================
-# CORS
-# ============================================================
+# ----------------------------------------------------
+# CORS / CSRF
+# ----------------------------------------------------
+
+FRONTEND_URL = config(
+    "FRONTEND_URL",
+    default="http://localhost:5173",
+).rstrip("/")
 
 CORS_ALLOWED_ORIGINS = [
-
-    origin.strip()
-
-    for origin in config(
-        "CORS_ALLOWED_ORIGINS",
-        default="http://localhost:5173",
-    ).split(",")
-
-    if origin.strip()
-
+    "http://localhost:5173",
+    FRONTEND_URL,
 ]
 
 CORS_ALLOW_CREDENTIALS = True
-
-
-# ============================================================
-# CSRF
-# ============================================================
-
 CSRF_TRUSTED_ORIGINS = [
-
-    origin.strip()
-
-    for origin in config(
-        "CSRF_TRUSTED_ORIGINS",
-        default="http://localhost:5173",
-    ).split(",")
-
-    if origin.strip()
-
+    "http://localhost:5173",
+    FRONTEND_URL,
 ]
-
-
 # ============================================================
 # PRODUCTION SECURITY
 # ============================================================
