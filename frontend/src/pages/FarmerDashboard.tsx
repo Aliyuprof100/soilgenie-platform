@@ -1,16 +1,32 @@
 import {
 
-  useCallback,
 
-  useEffect,
 
-  useMemo,
+  useCallback,
 
-  useState,
 
-  type ReactNode,
+
+  useEffect,
+
+
+
+  useMemo,
+
+
+
+  useState,
+
+
+
+  type ReactNode,
+
+
 
 } from "react";
+
+
+
+
 
 
 
@@ -18,83 +34,165 @@ import { useNavigate } from "react-router-dom";
 
 
 
+
+
+
+
 import api from "../api/api";
+
+
+
+
 
 
 
 import {
 
-  AlertTriangle,
 
-  ArrowRight,
 
-  CheckCircle2,
+  AlertTriangle,
 
-  Clock3,
 
-  Download,
 
-  FileText,
+  ArrowRight,
 
-  Leaf,
 
-  Loader2,
 
-  MapPin,
+  CheckCircle2,
 
-  RefreshCw,
 
-  Sprout,
 
-  TestTube2,
+  Clock3,
 
-  Tractor,
 
-  UserRound,
+
+  Download,
+
+
+
+  FileText,
+
+
+
+  Leaf,
+
+
+
+  Loader2,
+
+
+
+  MapPin,
+
+
+
+  RefreshCw,
+
+
+
+  Sprout,
+
+
+
+  TestTube2,
+
+
+
+  Tractor,
+
+
+
+  UserRound,
+
+
 
 } from "lucide-react";
 
 
 
+
+
+
+
 import {
 
-  type Farmer,
 
-  getCurrentFarmer,
+
+  type Farmer,
+
+
+
+  getCurrentFarmer,
+
+
 
 } from "../services/farmers";
 
 
 
+
+
+
+
 import {
 
-  type Farm,
 
-  getFarms,
+
+  type Farm,
+
+
+
+  getFarms,
+
+
 
 } from "../services/farms";
 
 
 
+
+
+
+
 import {
 
-  type SoilSample,
 
-  type SoilTest,
 
-  type SoilTestResult,
+  type SoilSample,
 
-  type SoilAnalysis,
 
-  type SoilRecommendation,
 
-  getSoilSamples,
+  type SoilTest,
 
-  getSoilTests,
 
-  getSoilAnalysisByTest,
 
-  getSoilRecommendation,
+  type SoilTestResult,
+
+
+
+  type SoilAnalysis,
+
+
+
+  type SoilRecommendation,
+
+
+
+  getSoilSamples,
+
+
+
+  getSoilTests,
+
+
+
+  getSoilAnalysisByTest,
+
+
+
+  getSoilRecommendation,
+
+
 
 } from "../services/soil";
 
@@ -102,29 +200,63 @@ import {
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   TYPES
 
-   ========================================================================== */
+
+   TYPES
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 interface DashboardSoilRecord {
 
-  farm: Farm;
 
-  sample: SoilSample;
 
-  test: SoilTest;
+  farm: Farm;
 
-  result: SoilTestResult | null;
 
-  analysis: SoilAnalysis | null;
 
-  recommendation: SoilRecommendation | null;
+  sample: SoilSample;
+
+
+
+  test: SoilTest;
+
+
+
+  result: SoilTestResult | null;
+
+
+
+  analysis: SoilAnalysis | null;
+
+
+
+  recommendation: SoilRecommendation | null;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -132,45 +264,91 @@ interface DashboardSoilRecord {
 
 /* ==========================================================================
 
-   HELPERS
 
-   ========================================================================== */
+
+   HELPERS
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 function formatDate(value?: string | null) {
 
-  if (!value) {
 
-    return "Not available";
 
-  }
+  if (!value) {
 
 
 
-  const date = new Date(value);
+    return "Not available";
 
 
 
-  if (Number.isNaN(date.getTime())) {
-
-    return "Not available";
-
-  }
+  }
 
 
 
-  return date.toLocaleDateString("en-NG", {
 
-    day: "numeric",
 
-    month: "short",
 
-    year: "numeric",
 
-  });
+  const date = new Date(value);
+
+
+
+
+
+
+
+  if (Number.isNaN(date.getTime())) {
+
+
+
+    return "Not available";
+
+
+
+  }
+
+
+
+
+
+
+
+  return date.toLocaleDateString("en-NG", {
+
+
+
+    day: "numeric",
+
+
+
+    month: "short",
+
+
+
+    year: "numeric",
+
+
+
+  });
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -178,43 +356,87 @@ function formatDate(value?: string | null) {
 
 function formatNumber(
 
-  value?: number | string | null,
 
-  decimals = 1
+
+  value?: number | string | null,
+
+
+
+  decimals = 1
+
+
 
 ) {
 
-  if (
 
-    value === null ||
 
-    value === undefined ||
-
-    value === ""
-
-  ) {
-
-    return "—";
-
-  }
+  if (
 
 
 
-  const numericValue = Number(value);
+    value === null ||
 
 
 
-  if (Number.isNaN(numericValue)) {
-
-    return String(value);
-
-  }
+    value === undefined ||
 
 
 
-  return numericValue.toFixed(decimals);
+    value === ""
+
+
+
+  ) {
+
+
+
+    return "—";
+
+
+
+  }
+
+
+
+
+
+
+
+  const numericValue = Number(value);
+
+
+
+
+
+
+
+  if (Number.isNaN(numericValue)) {
+
+
+
+    return String(value);
+
+
+
+  }
+
+
+
+
+
+
+
+  return numericValue.toFixed(decimals);
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -222,27 +444,55 @@ function formatNumber(
 
 function formatLabel(value?: string | null) {
 
-  if (!value) {
 
-    return "Not specified";
 
-  }
+  if (!value) {
 
 
 
-  return value
+    return "Not specified";
 
-    .replace(/_/g, " ")
 
-    .toLowerCase()
 
-    .replace(/\b\w/g, (letter) =>
+  }
 
-      letter.toUpperCase()
 
-    );
+
+
+
+
+
+  return value
+
+
+
+    .replace(/\_/g, " ")
+
+
+
+    .toLowerCase()
+
+
+
+    .replace(/\b\w/g, (letter) =>
+
+
+
+      letter.toUpperCase()
+
+
+
+    );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -250,35 +500,71 @@ function formatLabel(value?: string | null) {
 
 function formatState(value?: string | null) {
 
-  if (!value) {
 
-    return "";
 
-  }
+  if (!value) {
 
 
 
-  const normalized =
-
-    value.trim().toUpperCase();
+    return "";
 
 
 
-  const states: Record<string, string> = {
-
-    "NG-YO": "Yobe State",
-
-    YO: "Yobe State",
-
-    YOBE: "Yobe State",
-
-  };
+  }
 
 
 
-  return states[normalized] ?? value;
+
+
+
+
+  const normalized =
+
+
+
+    value.trim().toUpperCase();
+
+
+
+
+
+
+
+  const states: Record<string, string> = {
+
+
+
+    "NG-YO": "Yobe State",
+
+
+
+    YO: "Yobe State",
+
+
+
+    YOBE: "Yobe State",
+
+
+
+  };
+
+
+
+
+
+
+
+  return states[normalized] ?? value;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -286,27 +572,55 @@ function formatState(value?: string | null) {
 
 function getFarmLocation(farm: Farm) {
 
-  const parts = [
 
-    farm.village,
 
-    farm.ward,
-
-    farm.lga,
-
-    formatState(farm.state),
-
-  ].filter(Boolean);
+  const parts = [
 
 
 
-  return parts.length > 0
+    farm.village,
 
-    ? parts.join(", ")
 
-    : "Location not specified";
+
+    farm.ward,
+
+
+
+    farm.lga,
+
+
+
+    formatState(farm.state),
+
+
+
+  ].filter(Boolean);
+
+
+
+
+
+
+
+  return parts.length > 0
+
+
+
+    ? parts.join(", ")
+
+
+
+    : "Location not specified";
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -314,31 +628,63 @@ function getFarmLocation(farm: Farm) {
 
 function getFarmerLocation(
 
-  farmer: Farmer | null
+
+
+  farmer: Farmer | null
+
+
 
 ) {
 
-  if (!farmer) {
 
-    return "—";
 
-  }
+  if (!farmer) {
 
 
 
-  const parts = [
-
-    farmer.lga,
-
-    formatState(farmer.state),
-
-  ].filter(Boolean);
+    return "—";
 
 
 
-  return parts.join(", ");
+  }
+
+
+
+
+
+
+
+  const parts = [
+
+
+
+    farmer.lga,
+
+
+
+    formatState(farmer.state),
+
+
+
+  ].filter(Boolean);
+
+
+
+
+
+
+
+  return parts.join(", ");
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -346,43 +692,87 @@ function getFarmerLocation(
 
 function getAnalysisBadge(
 
-  status?: string | null
+
+
+  status?: string | null
+
+
 
 ) {
 
-  switch (status?.toUpperCase()) {
 
-    case "GOOD":
 
-      return "border-emerald-200 bg-emerald-100 text-emerald-800";
+  switch (status?.toUpperCase()) {
 
 
 
-    case "MODERATE":
-
-      return "border-amber-200 bg-amber-100 text-amber-800";
+    case "GOOD":
 
 
 
-    case "POOR":
-
-      return "border-orange-200 bg-orange-100 text-orange-800";
+      return "border-emerald-200 bg-emerald-100 text-emerald-800";
 
 
 
-    case "CRITICAL":
-
-      return "border-red-200 bg-red-100 text-red-800";
 
 
 
-    default:
 
-      return "border-slate-200 bg-slate-100 text-slate-700";
+    case "MODERATE":
 
-  }
+
+
+      return "border-amber-200 bg-amber-100 text-amber-800";
+
+
+
+
+
+
+
+    case "POOR":
+
+
+
+      return "border-orange-200 bg-orange-100 text-orange-800";
+
+
+
+
+
+
+
+    case "CRITICAL":
+
+
+
+      return "border-red-200 bg-red-100 text-red-800";
+
+
+
+
+
+
+
+    default:
+
+
+
+      return "border-slate-200 bg-slate-100 text-slate-700";
+
+
+
+  }
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -390,41 +780,79 @@ function getAnalysisBadge(
 
 function getTestStatusClass(
 
-  status?: string | null
+
+
+  status?: string | null
+
+
 
 ) {
 
-  switch (status?.toUpperCase()) {
 
-    case "COMPLETED":
 
-      return "bg-emerald-100 text-emerald-700";
+  switch (status?.toUpperCase()) {
 
 
 
-    case "PROCESSING":
-
-      return "bg-blue-100 text-blue-700";
+    case "COMPLETED":
 
 
 
-    case "PENDING":
-
-      return "bg-amber-100 text-amber-700";
+      return "bg-emerald-100 text-emerald-700";
 
 
 
-    case "FAILED":
-
-      return "bg-red-100 text-red-700";
 
 
 
-    default:
 
-      return "bg-slate-100 text-slate-600";
+    case "PROCESSING":
 
-  }
+
+
+      return "bg-blue-100 text-blue-700";
+
+
+
+
+
+
+
+    case "PENDING":
+
+
+
+      return "bg-amber-100 text-amber-700";
+
+
+
+
+
+
+
+    case "FAILED":
+
+
+
+      return "bg-red-100 text-red-700";
+
+
+
+
+
+
+
+    default:
+
+
+
+      return "bg-slate-100 text-slate-600";
+
+
+
+  }
+
+
 
 }
 
@@ -432,3525 +860,7054 @@ function getTestStatusClass(
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   PAGE
 
-   ========================================================================== */
+
+   PAGE
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 export default function FarmerDashboard() {
 
-  const navigate = useNavigate();
 
 
+  const navigate = useNavigate();
 
-  const [farmer, setFarmer] =
 
-    useState<Farmer | null>(null);
 
 
 
-  const [farms, setFarms] =
 
-    useState<Farm[]>([]);
 
+  const [farmer, setFarmer] =
 
 
-  const [soilRecords, setSoilRecords] =
 
-    useState<DashboardSoilRecord[]>([]);
+    useState<Farmer | null>(null);
 
 
 
-  const [loading, setLoading] =
 
-    useState(true);
 
 
 
-  const [refreshing, setRefreshing] =
+  const [farms, setFarms] =
 
-    useState(false);
 
 
+    useState<Farm[]>([]);
 
-  const [downloadingPdfId, setDownloadingPdfId] =
 
-    useState<number | null>(null);
 
 
 
-  const [pdfError, setPdfError] =
 
-    useState<string | null>(null);
 
+  const [soilRecords, setSoilRecords] =
 
 
-  const [error, setError] =
 
-    useState<string | null>(null);
+    useState<DashboardSoilRecord[]>([]);
 
 
 
 
 
-  /* ==========================================================================
 
-     LOAD DASHBOARD
 
-     ========================================================================== */
+  const [loading, setLoading] =
 
 
 
-  const loadDashboard = useCallback(
+    useState(true);
 
-    async (isRefresh = false) => {
 
-      try {
 
-        if (isRefresh) {
 
-          setRefreshing(true);
 
-        } else {
 
-          setLoading(true);
 
-        }
+  const [refreshing, setRefreshing] =
 
 
 
-        setError(null);
+    useState(false);
 
 
 
 
 
-        /* ----------------------------------------------------------------------
 
-           FARMER + FARMS
 
-           ---------------------------------------------------------------------- */
+  const [downloadingPdfId, setDownloadingPdfId] =
 
 
 
-        const [
+    useState<number | null>(null);
 
-          farmerData,
 
-          farmData,
 
-        ] = await Promise.all([
 
-          getCurrentFarmer(),
 
-          getFarms(),
 
-        ]);
 
+  const [pdfError, setPdfError] =
 
 
-        setFarmer(farmerData);
 
-        setFarms(farmData);
+    useState<string | null>(null);
 
 
 
 
 
-        /* ----------------------------------------------------------------------
 
-           SOIL RECORDS
 
-           ---------------------------------------------------------------------- */
+  const [error, setError] =
 
 
 
-        const records:
+    useState<string | null>(null);
 
-          DashboardSoilRecord[] = [];
 
 
 
 
 
-        for (const farm of farmData) {
 
-          let samples: SoilSample[] = [];
 
 
 
-          try {
 
-            samples =
+  /* ==========================================================================
 
-              await getSoilSamples(
 
-                farm.id
 
-              );
+     LOAD DASHBOARD
 
-          } catch (sampleError) {
 
-            console.error(
 
-              `Unable to load samples for farm ${farm.id}:`,
+     ========================================================================== */
 
-              sampleError
 
-            );
 
 
 
-            continue;
 
-          }
 
+  const loadDashboard = useCallback(
 
 
 
+    async (isRefresh = false) => {
 
-          for (const sample of samples) {
 
-            let tests: SoilTest[] = [];
 
+      try {
 
 
-            try {
 
-              tests =
+        if (isRefresh) {
 
-                await getSoilTests(
 
-                  sample.id
 
-                );
+          setRefreshing(true);
 
-            } catch (testError) {
 
-              console.error(
 
-                `Unable to load tests for sample ${sample.id}:`,
+        } else {
 
-                testError
 
-              );
 
+          setLoading(true);
 
 
-              continue;
 
-            }
+        }
 
 
 
 
 
-            for (const test of tests) {
 
-              const result =
 
-                test.result ?? null;
+        setError(null);
 
 
 
-              let analysis:
 
-                SoilAnalysis | null = null;
 
 
 
-              let recommendation:
 
-                SoilRecommendation | null =
 
-                null;
 
 
+        /* ----------------------------------------------------------------------
 
 
 
-              /* --------------------------------------------------------------
+           FARMER + FARMS
 
-                 ANALYSIS
 
-                 -------------------------------------------------------------- */
 
+           ---------------------------------------------------------------------- */
 
 
-              if (
 
-                test.status ===
 
-                "COMPLETED"
 
-              ) {
 
-                try {
 
-                  analysis =
+        const [
 
-                    await getSoilAnalysisByTest(
 
-                      test.id
 
-                    );
+          farmerData,
 
-                } catch (analysisError) {
 
-                  console.error(
 
-                    `Unable to load analysis for test ${test.id}:`,
+          farmData,
 
-                    analysisError
 
-                  );
 
-                }
+        ] = await Promise.all([
 
-              }
 
 
+          getCurrentFarmer(),
 
 
 
-              /* --------------------------------------------------------------
+          getFarms(),
 
-                 RECOMMENDATION
 
-                 -------------------------------------------------------------- */
 
+        ]);
 
 
-              if (result) {
 
-                try {
 
-                  recommendation =
 
-                    await getSoilRecommendation(
 
-                      result.id
 
-                    );
+        setFarmer(farmerData);
 
-                } catch (
 
-                  recommendationError
 
-                ) {
+        setFarms(farmData);
 
-                  console.error(
 
-                    `Unable to load recommendation for result ${result.id}:`,
 
-                    recommendationError
 
-                  );
 
-                }
 
-              }
 
 
 
 
 
-              records.push({
+        /* ----------------------------------------------------------------------
 
-                farm,
 
-                sample,
 
-                test,
+           SOIL RECORDS
 
-                result,
 
-                analysis,
 
-                recommendation,
+           ---------------------------------------------------------------------- */
 
-              });
 
-            }
 
-          }
 
-        }
 
 
 
+        const records:
 
 
-        /* ----------------------------------------------------------------------
 
-           NEWEST FIRST
+          DashboardSoilRecord[] = [];
 
-           ---------------------------------------------------------------------- */
 
 
 
-        records.sort(
 
-          (a, b) => {
 
-            const dateA =
 
-              new Date(
 
-                a.test.tested_at ??
 
-                  a.test.created_at
 
-              ).getTime();
 
+        for (const farm of farmData) {
 
 
-            const dateB =
 
-              new Date(
+          let samples: SoilSample[] = [];
 
-                b.test.tested_at ??
 
-                  b.test.created_at
 
-              ).getTime();
 
 
 
-            return dateB - dateA;
 
-          }
+          try {
 
-        );
 
 
+            samples =
 
 
 
-        setSoilRecords(records);
+              await getSoilSamples(
 
 
 
-      } catch (dashboardError: unknown) {
+                farm.id
 
-        console.error(
 
-          "Unable to load farmer dashboard:",
 
-          dashboardError
+              );
 
-        );
 
 
+          } catch (sampleError) {
 
-        const message =
 
-          dashboardError instanceof Error
 
-            ? dashboardError.message
+            console.error(
 
-            : "Unable to load your SoilGenie dashboard.";
 
 
+              `Unable to load samples for farm ${farm.id}:`,
 
-        setError(message);
 
 
+              sampleError
 
-      } finally {
 
-        setLoading(false);
 
-        setRefreshing(false);
+            );
 
-      }
 
-    },
 
-    []
 
-  );
 
 
 
+            continue;
 
 
-  const downloadSoilReportPdf = useCallback(
 
-    async (record: DashboardSoilRecord) => {
+          }
 
-      if (!record.test.id) {
-        return;
-      }
 
 
 
-      try {
-        setPdfError(null);
-        setDownloadingPdfId(record.test.id);
 
 
 
-        const response = await api.get(
-          `/reports/soil/${record.test.id}/pdf/`,
-          {
-            responseType: "blob",
-          }
-        );
 
 
+
+
+          for (const sample of samples) {
+
+
+
+            let tests: SoilTest[] = [];
+
+
+
+
+
+
+
+            try {
+
+
+
+              tests =
+
+
+
+                await getSoilTests(
+
+
+
+                  sample.id
+
+
+
+                );
+
+
+
+            } catch (testError) {
+
+
+
+              console.error(
+
+
+
+                `Unable to load tests for sample ${sample.id}:`,
+
+
+
+                testError
+
+
+
+              );
+
+
+
+
+
+
+
+              continue;
+
+
+
+            }
+
+
+
+
+
+
+
+
+
+
+
+            for (const test of tests) {
+
+
+
+              const result =
+
+
+
+                test.result ?? null;
+
+
+
+
+
+
+
+              let analysis:
+
+
+
+                SoilAnalysis | null = null;
+
+
+
+
+
+
+
+              let recommendation:
+
+
+
+                SoilRecommendation | null =
+
+
+
+                null;
+
+
+
+
+
+
+
+
+
+
+
+              /* --------------------------------------------------------------
+
+
+
+                 ANALYSIS
+
+
+
+                 -------------------------------------------------------------- */
+
+
+
+
+
+
+
+              if (
+
+
+
+                test.status ===
+
+
+
+                "COMPLETED"
+
+
+
+              ) {
+
+
+
+                try {
+
+
+
+                  analysis =
+
+
+
+                    await getSoilAnalysisByTest(
+
+
+
+                      test.id
+
+
+
+                    );
+
+
+
+                } catch (analysisError) {
+
+
+
+                  console.error(
+
+
+
+                    `Unable to load analysis for test ${test.id}:`,
+
+
+
+                    analysisError
+
+
+
+                  );
+
+
+
+                }
+
+
+
+              }
+
+
+
+
+
+
+
+
+
+
+
+              /* --------------------------------------------------------------
+
+
+
+                 RECOMMENDATION
+
+
+
+                 -------------------------------------------------------------- */
+
+
+
+
+
+
+
+              if (result) {
+
+
+
+                try {
+
+
+
+                  recommendation =
+
+
+
+                    await getSoilRecommendation(
+
+
+
+                      result.id
+
+
+
+                    );
+
+
+
+                } catch (
+
+
+
+                  recommendationError
+
+
+
+                ) {
+
+
+
+                  console.error(
+
+
+
+                    `Unable to load recommendation for result ${result.id}:`,
+
+
+
+                    recommendationError
+
+
+
+                  );
+
+
+
+                }
+
+
+
+              }
+
+
+
+
+
+
+
+
+
+
+
+              records.push({
+
+
+
+                farm,
+
+
+
+                sample,
+
+
+
+                test,
+
+
+
+                result,
+
+
+
+                analysis,
+
+
+
+                recommendation,
+
+
+
+              });
+
+
+
+            }
+
+
+
+          }
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+
+        /* ----------------------------------------------------------------------
+
+
+
+           NEWEST FIRST
+
+
+
+           ---------------------------------------------------------------------- */
+
+
+
+
+
+
+
+        records.sort(
+
+
+
+          (a, b) => {
+
+
+
+            const dateA =
+
+
+
+              new Date(
+
+
+
+                a.test.tested_at ??
+
+
+
+                  a.test.created_at
+
+
+
+              ).getTime();
+
+
+
+
+
+
+
+            const dateB =
+
+
+
+              new Date(
+
+
+
+                b.test.tested_at ??
+
+
+
+                  b.test.created_at
+
+
+
+              ).getTime();
+
+
+
+
+
+
+
+            return dateB - dateA;
+
+
+
+          }
+
+
+
+        );
+
+
+
+
+
+
+
+
+
+
+
+        setSoilRecords(records);
+
+
+
+
+
+
+
+      } catch (dashboardError: unknown) {
+
+
+
+        console.error(
+
+
+
+          "Unable to load farmer dashboard:",
+
+
+
+          dashboardError
+
+
+
+        );
+
+
+
+
+
+
+
+        const message =
+
+
+
+          dashboardError instanceof Error
+
+
+
+            ? dashboardError.message
+
+
+
+            : "Unable to load your SoilGenie dashboard.";
+
+
+
+
+
+
+
+        setError(message);
+
+
+
+
+
+
+
+      } finally {
+
+
+
+        setLoading(false);
+
+
+
+        setRefreshing(false);
+
+
+
+      }
+
+
+
+    },
+
+
+
+    []
+
+
+
+  );
+
+
+
+
+
+
+
+
+
+
+
+  const downloadSoilReportPdf = useCallback(
+
+
+
+    async (record: DashboardSoilRecord) => {
+
+
+
+      if (!record.test.id) {
+
+        return;
+
+      }
+
+
+
+
+
+
+
+      try {
+
+        setPdfError(null);
+
+        setDownloadingPdfId(record.test.id);
+
+
+
+
+
+
+
+        const response = await api.get(
+
+          `/reports/soil/${record.test.id}/pdf/`,
+
+          {
+
+            responseType: "blob",
+
+          }
+
+        );
+
+
+
+
+
+
+
+        const contentType =
+          typeof response.headers["content-type"] === "string"
+            ? response.headers["content-type"]
+            : "application/pdf";
 
         const blob = new Blob([response.data], {
-          type:
-            response.headers["content-type"] ||
-            "application/pdf",
+          type: contentType,
         });
 
 
 
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement("a");
 
 
 
-        link.href = url;
-        link.download = `SoilGenie-${
-          record.farm.farm_id || record.farm.farm_name
-        }-${record.sample.sample_id}.pdf`;
 
+        const url = window.URL.createObjectURL(blob);
 
+        const link = document.createElement("a");
 
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-        window.URL.revokeObjectURL(url);
-      } catch (pdfDownloadError) {
-        console.error(
-          "Unable to download SoilGenie PDF report:",
-          pdfDownloadError
-        );
 
 
 
-        setPdfError(
-          "Unable to download the PDF report. Please try again."
-        );
-      } finally {
-        setDownloadingPdfId(null);
-      }
-    },
 
-    []
-  );
 
 
+        link.href = url;
 
-  useEffect(() => {
+        link.download = `SoilGenie-${
 
-    void loadDashboard();
+          record.farm.farm_id || record.farm.farm_name
 
-  }, [loadDashboard]);
+        }-${record.sample.sample_id}.pdf`;
 
 
 
 
 
-  /* ==========================================================================
 
-     DERIVED DATA
 
-     ========================================================================== */
+        document.body.appendChild(link);
 
+        link.click();
 
+        link.remove();
 
-  const completedRecords =
+        window.URL.revokeObjectURL(url);
 
-    useMemo(
+      } catch (pdfDownloadError) {
 
-      () =>
+        console.error(
 
-        soilRecords.filter(
+          "Unable to download SoilGenie PDF report:",
 
-          (record) =>
+          pdfDownloadError
 
-            record.test.status ===
+        );
 
-              "COMPLETED" &&
 
-            record.result !== null
 
-        ),
 
-      [soilRecords]
 
-    );
 
 
+        setPdfError(
 
+          "Unable to download the PDF report. Please try again."
 
+        );
 
-  /*
+      } finally {
 
-   * This is deliberately NOT simply soilRecords[0].
+        setDownloadingPdfId(null);
 
-   *
+      }
 
-   * The main farmer assessment should show the newest
+    },
 
-   * completed soil assessment that has actual measurements.
 
-   */
 
+    []
 
+  );
 
-  const latestCompletedAssessment =
 
-    useMemo(
 
-      () =>
 
-        completedRecords.length > 0
 
-          ? completedRecords[0]
 
-          : null,
 
-      [completedRecords]
+  useEffect(() => {
 
-    );
 
 
+    void loadDashboard();
 
 
 
-  const pendingRecords =
+  }, [loadDashboard]);
 
-    useMemo(
 
-      () =>
 
-        soilRecords.filter(
 
-          (record) =>
 
-            record.test.status ===
 
-              "PENDING" ||
 
-            record.test.status ===
 
-              "PROCESSING"
 
-        ),
 
-      [soilRecords]
 
-    );
+  /* ==========================================================================
 
 
 
+     DERIVED DATA
 
 
-  /*
 
-   * Determine how many unfinished tests are newer than
+     ========================================================================== */
 
-   * the latest completed assessment.
 
-   */
 
 
 
-  const newerPendingRecords =
 
-    useMemo(() => {
 
-      if (!latestCompletedAssessment) {
+  const completedRecords =
 
-        return pendingRecords;
 
-      }
 
+    useMemo(
 
 
-      const completedDate =
 
-        new Date(
+      () =>
 
-          latestCompletedAssessment
 
-            .test
 
-            .tested_at ??
+        soilRecords.filter(
 
-            latestCompletedAssessment
 
-              .test
 
-              .created_at
+          (record) =>
 
-        ).getTime();
 
 
+            record.test.status ===
 
-      return pendingRecords.filter(
 
-        (record) => {
 
-          const pendingDate =
+              "COMPLETED" &&
 
-            new Date(
 
-              record.test.tested_at ??
 
-                record.test.created_at
+            record.result !== null
 
-            ).getTime();
 
 
+        ),
 
-          return (
 
-            pendingDate >
 
-            completedDate
+      [soilRecords]
 
-          );
 
-        }
 
-      );
+    );
 
-    }, [
 
-      latestCompletedAssessment,
 
-      pendingRecords,
 
-    ]);
 
 
 
 
 
-  const totalFarmArea =
 
-    useMemo(
 
-      () =>
+  /*
 
-        farms.reduce(
 
-          (total, farm) =>
 
-            total +
+   \* This is deliberately NOT simply soilRecords[0].
 
-            (Number(
 
-              farm.farm_size
 
-            ) || 0),
+   \*
 
-          0
 
-        ),
 
-      [farms]
+   \* The main farmer assessment should show the newest
 
-    );
 
 
+   \* completed soil assessment that has actual measurements.
 
 
 
-  const latestValidation =
+   */
 
-    latestCompletedAssessment
 
-      ?.recommendation
 
-      ?.measurement_validation ??
 
-    null;
 
 
 
+  const latestCompletedAssessment =
 
 
-  const recommendationBlocked =
 
-    latestValidation
+    useMemo(
 
-      ?.recommendation_blocked ===
 
-    true;
 
+      () =>
 
 
 
+        completedRecords.length > 0
 
-  const bestCrop =
 
-    latestCompletedAssessment
 
-      ?.recommendation
+          ? completedRecords[0]
 
-      ?.best_crop ??
 
-    null;
 
+          : null,
 
 
 
+      [completedRecords]
 
-  const provisionalBestCrop =
 
-    latestCompletedAssessment
 
-      ?.recommendation
+    );
 
-      ?.provisional_best_crop ??
 
-    null;
 
 
 
 
 
-  const nextActions =
 
-    latestCompletedAssessment
 
-      ?.recommendation
 
-      ?.soil_conditions
 
-      ?.actions ??
+  const pendingRecords =
 
-    [];
 
 
+    useMemo(
 
 
 
-  /* ==========================================================================
+      () =>
 
-     LOADING
 
-     ========================================================================== */
 
+        soilRecords.filter(
 
 
-  if (loading) {
 
-    return (
+          (record) =>
 
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
 
 
+            record.test.status ===
 
-        <div className="text-center">
 
 
+              "PENDING" ||
 
-          <Loader2 className="mx-auto h-10 w-10 animate-spin text-green-700" />
 
 
+            record.test.status ===
 
-          <h2 className="mt-4 text-xl font-bold text-slate-900">
 
-            Loading your SoilGenie dashboard
 
-          </h2>
+              "PROCESSING"
 
 
 
-          <p className="mt-2 text-sm text-slate-500">
+        ),
 
-            Preparing your farm and soil information.
 
-          </p>
 
+      [soilRecords]
 
 
-        </div>
 
+    );
 
 
-      </div>
 
-    );
 
-  }
 
 
 
 
 
-  /* ==========================================================================
 
-     ERROR
 
-     ========================================================================== */
+  /*
 
 
 
-  if (error) {
+   \* Determine how many unfinished tests are newer than
 
-    return (
 
-      <div className="min-h-screen bg-slate-50 px-4 py-12">
 
+   \* the latest completed assessment.
 
 
-        <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-white p-8 shadow-sm">
 
+   */
 
 
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
 
-            <AlertTriangle className="h-6 w-6 text-red-700" />
 
-          </div>
 
 
 
-          <h1 className="mt-5 text-2xl font-bold text-slate-900">
+  const newerPendingRecords =
 
-            We could not load your dashboard
 
-          </h1>
 
+    useMemo(() => {
 
 
-          <p className="mt-3 text-slate-600">
 
-            {error}
+      if (!latestCompletedAssessment) {
 
-          </p>
 
 
+        return pendingRecords;
 
-          <button
 
-            type="button"
 
-            onClick={() =>
+      }
 
-              void loadDashboard()
 
-            }
 
-            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-semibold text-white transition hover:bg-green-800"
 
-          >
 
-            <RefreshCw className="h-4 w-4" />
 
-            Try Again
 
-          </button>
+      const completedDate =
 
 
 
-        </div>
+        new Date(
 
 
 
-      </div>
+          latestCompletedAssessment
 
-    );
 
-  }
 
+            .test
 
 
 
+            .tested_at ??
 
-  /* ==========================================================================
 
-     DASHBOARD
 
-     ========================================================================== */
+            latestCompletedAssessment
 
 
 
-  return (
+              .test
 
-    <div className="min-h-screen bg-slate-50">
 
 
+              .created_at
 
-      {/* ============================================================
 
-          HEADER
 
-      ============================================================ */}
+        ).getTime();
 
 
 
-      <header className="border-b border-slate-200 bg-white">
 
 
 
-        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
 
+      return pendingRecords.filter(
 
 
-          <div>
 
+        (record) => {
 
 
-            <div className="flex items-center gap-2 text-sm font-semibold text-green-700">
 
-              <Sprout className="h-4 w-4" />
+          const pendingDate =
 
-              SoilGenie Farmer Portal
 
-            </div>
 
+            new Date(
 
 
-            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
 
-              Welcome,{" "}
+              record.test.tested_at ??
 
-              {farmer?.first_name ||
 
-                "Farmer"}
 
-            </h1>
+                record.test.created_at
 
 
 
-            <p className="mt-2 text-sm text-slate-600">
+            ).getTime();
 
-              Understand your soil. See your crop
 
-              guidance. Know what to do next.
 
-            </p>
 
 
 
-          </div>
 
+          return (
 
 
 
+            pendingDate >
 
-          <button
 
-            type="button"
 
-            disabled={refreshing}
+            completedDate
 
-            onClick={() =>
 
-              void loadDashboard(true)
 
-            }
+          );
 
-            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
 
-          >
 
-            <RefreshCw
+        }
 
-              className={`h-4 w-4 ${
 
-                refreshing
 
-                  ? "animate-spin"
+      );
 
-                  : ""
 
-              }`}
 
-            />
+    }, [
 
 
 
-            {refreshing
+      latestCompletedAssessment,
 
-              ? "Refreshing..."
 
-              : "Refresh"}
 
-          </button>
+      pendingRecords,
 
 
 
-        </div>
+    ]);
 
 
 
-      </header>
 
 
 
 
 
-      <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
 
 
 
-        {/* ============================================================
+  const totalFarmArea =
 
-            FARMER PROFILE
 
-        ============================================================ */}
 
+    useMemo(
 
 
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 text-white shadow-lg">
 
+      () =>
 
 
-          <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.4fr_1fr]">
 
+        farms.reduce(
 
 
-            <div>
 
+          (total, farm) =>
 
 
-              <div className="flex items-center gap-4">
 
+            total +
 
 
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
 
-                  <UserRound className="h-7 w-7" />
+            (Number(
 
-                </div>
 
 
+              farm.farm_size
 
-                <div>
 
 
+            ) || 0),
 
-                  <p className="text-sm font-medium text-green-100">
 
-                    Farmer Profile
 
-                  </p>
+          0
 
 
 
-                  <h2 className="text-2xl font-bold">
+        ),
 
-                    {farmer?.first_name}{" "}
 
-                    {farmer?.last_name}
 
-                  </h2>
+      [farms]
 
 
 
-                </div>
+    );
 
 
 
-              </div>
 
 
 
 
 
-              <p className="mt-6 max-w-2xl text-sm leading-6 text-green-50">
 
-                Your SoilGenie account brings your
 
-                farms, soil tests, soil condition and
 
-                crop decision-support guidance together
+  const latestValidation =
 
-                in one place.
 
-              </p>
 
+    latestCompletedAssessment
 
 
-            </div>
 
+      ?.recommendation
 
 
 
+      ?.measurement_validation ??
 
-            <div className="grid grid-cols-2 gap-3">
 
 
+    null;
 
-              <ProfileItem
 
-                label="Farmer ID"
 
-                value={
 
-                  farmer?.farmer_id ||
 
-                  "—"
 
-                }
 
-              />
 
 
 
-              <ProfileItem
 
-                label="Status"
+  const recommendationBlocked =
 
-                value={formatLabel(
 
-                  farmer?.status
 
-                )}
+    latestValidation
 
-              />
 
 
+      ?.recommendation_blocked ===
 
-              <ProfileItem
 
-                label="Location"
 
-                value={getFarmerLocation(
+    true;
 
-                  farmer
 
-                )}
 
-              />
 
 
 
-              <ProfileItem
 
-                label="Farming Type"
 
-                value={formatLabel(
 
-                  farmer?.farming_type
 
-                )}
 
-              />
+  const bestCrop =
 
 
 
-            </div>
+    latestCompletedAssessment
 
 
 
-          </div>
+      ?.recommendation
 
 
 
-        </section>
+      ?.best_crop ??
 
 
 
+    null;
 
 
-        {/* ============================================================
 
-            STATISTICS
 
-        ============================================================ */}
 
 
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
 
 
-          <StatCard
 
-            title="My Farms"
+  const provisionalBestCrop =
 
-            value={String(
 
-              farms.length
 
-            )}
+    latestCompletedAssessment
 
-            subtitle="Registered farms"
 
-            icon={
 
-              <Tractor className="h-5 w-5 text-green-700" />
+      ?.recommendation
 
-            }
 
-            iconClass="bg-green-100"
 
-          />
+      ?.provisional_best_crop ??
 
 
 
-          <StatCard
+    null;
 
-            title="Total Farm Area"
 
-            value={`${formatNumber(
 
-              totalFarmArea,
 
-              2
 
-            )} ha`}
 
-            subtitle="Across registered farms"
 
-            icon={
 
-              <MapPin className="h-5 w-5 text-blue-700" />
 
-            }
 
-            iconClass="bg-blue-100"
 
-          />
+  const nextActions =
 
 
 
-          <StatCard
+    latestCompletedAssessment
 
-            title="Soil Tests"
 
-            value={String(
 
-              soilRecords.length
+      ?.recommendation
 
-            )}
 
-            subtitle="Recorded tests"
 
-            icon={
+      ?.soil_conditions
 
-              <TestTube2 className="h-5 w-5 text-violet-700" />
 
-            }
 
-            iconClass="bg-violet-100"
+      ?.actions ??
 
-          />
 
 
+    [];
 
-          <StatCard
 
-            title="Reports Ready"
 
-            value={String(
 
-              completedRecords.length
 
-            )}
 
-            subtitle="Completed assessments"
 
-            icon={
 
-              <FileText className="h-5 w-5 text-amber-700" />
 
-            }
 
-            iconClass="bg-amber-100"
 
-          />
+  /* ==========================================================================
 
 
 
-        </section>
+     LOADING
 
 
 
+     ========================================================================== */
 
 
-        {/* ============================================================
 
-            TESTS IN PROGRESS
 
-        ============================================================ */}
 
 
 
-        {newerPendingRecords.length >
+  if (loading) {
 
-          0 && (
 
 
+    return (
 
-          <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
 
 
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
 
 
 
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100">
 
-                <Clock3 className="h-5 w-5 text-blue-700" />
 
-              </div>
 
+        <div className="text-center">
 
 
 
 
-              <div className="flex-1">
 
 
 
-                <p className="text-sm font-bold uppercase tracking-wide text-blue-700">
+          <Loader2 className="mx-auto h-10 w-10 animate-spin text-green-700" />
 
-                  Tests In Progress
 
-                </p>
 
 
 
-                <h2 className="mt-1 text-lg font-bold text-slate-900">
 
-                  {newerPendingRecords.length}{" "}
 
-                  newer soil{" "}
+          <h2 className="mt-4 text-xl font-bold text-slate-900">
 
-                  {newerPendingRecords.length ===
 
-                  1
 
-                    ? "test is"
+            Loading your SoilGenie dashboard
 
-                    : "tests are"}{" "}
 
-                  awaiting results
 
-                </h2>
+          </h2>
 
 
 
-                <p className="mt-2 text-sm leading-6 text-slate-600">
 
-                  Your latest completed assessment
 
-                  remains available below while the
 
-                  newer soil{" "}
 
-                  {newerPendingRecords.length ===
+          <p className="mt-2 text-sm text-slate-500">
 
-                  1
 
-                    ? "test is"
 
-                    : "tests are"}{" "}
+            Preparing your farm and soil information.
 
-                  being processed.
 
-                </p>
 
+          </p>
 
 
 
 
-                <div className="mt-4 flex flex-wrap gap-2">
 
 
 
-                  {newerPendingRecords.map(
+        </div>
 
-                    (record) => (
 
 
 
-                      <span
 
-                        key={record.test.id}
 
-                        className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
 
-                      >
+      </div>
 
-                        {
 
-                          record.sample
 
-                            .sample_id
+    );
 
-                        }{" "}
 
-                        ·{" "}
 
-                        {formatLabel(
+  }
 
-                          record.test
 
-                            .status
 
-                        )}
 
-                      </span>
 
 
 
-                    )
 
-                  )}
 
 
 
-                </div>
+  /* ==========================================================================
 
 
 
-              </div>
+     ERROR
 
 
 
-            </div>
+     ========================================================================== */
 
 
 
-          </section>
 
 
 
-        )}
 
+  if (error) {
 
 
 
+    return (
 
-        {pdfError && (
 
-          <section className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
 
-            <div className="flex items-start gap-3">
+      <div className="min-h-screen bg-slate-50 px-4 py-12">
 
-              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-700" />
 
-              <div className="flex-1">
 
-                <p className="text-sm font-bold text-red-800">
 
-                  PDF download failed
 
-                </p>
 
-                <p className="mt-1 text-sm text-red-700">
 
-                  {pdfError}
+        <div className="mx-auto max-w-3xl rounded-3xl border border-red-200 bg-white p-8 shadow-sm">
 
-                </p>
 
-              </div>
 
-              <button
 
-                type="button"
 
-                onClick={() => setPdfError(null)}
 
-                className="text-sm font-semibold text-red-700 hover:text-red-900"
 
-              >
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-100">
 
-                Dismiss
 
-              </button>
 
-            </div>
+            <AlertTriangle className="h-6 w-6 text-red-700" />
 
-          </section>
 
-        )}
 
+          </div>
 
 
-        {/* ============================================================
 
-            LATEST COMPLETED ASSESSMENT
 
-        ============================================================ */}
 
 
 
-        <section>
+          <h1 className="mt-5 text-2xl font-bold text-slate-900">
 
 
 
-          <div className="mb-4">
+            We could not load your dashboard
 
 
 
-            <h2 className="text-xl font-bold text-slate-900">
+          </h1>
 
-              Latest Completed Soil Assessment
 
-            </h2>
 
 
 
-            <p className="mt-1 text-sm text-slate-500">
 
-              Your newest completed soil test with
 
-              available measurements.
+          <p className="mt-3 text-slate-600">
 
-            </p>
 
 
+            {error}
 
-          </div>
 
 
+          </p>
 
 
 
-          {!latestCompletedAssessment ? (
 
 
 
-            <EmptyState
 
-              icon={
+          <button
 
-                <TestTube2 className="h-7 w-7 text-green-700" />
 
-              }
 
-              title="No completed soil assessment yet"
+            type="button"
 
-              description="Your completed soil assessment will appear here once a SoilGenie field agent finishes testing your soil sample."
 
-            />
 
+            onClick={() =>
 
 
-          ) : (
 
+              void loadDashboard()
 
 
-            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
+            }
 
 
-              <div className="p-6 sm:p-7">
 
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-green-700 px-5 py-3 font-semibold text-white transition hover:bg-green-800"
 
 
-                <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
 
+          >
 
 
-                  <div>
 
+            <RefreshCw className="h-4 w-4" />
 
 
-                    <div className="flex flex-wrap items-center gap-3">
 
+            Try Again
 
 
-                      <h3 className="text-xl font-bold text-slate-900">
 
-                        {
+          </button>
 
-                          latestCompletedAssessment
 
-                            .farm
 
-                            .farm_name
 
-                        }
 
-                      </h3>
 
 
+        </div>
 
 
 
-                      {latestCompletedAssessment
 
-                        .analysis && (
 
 
 
-                        <span
+      </div>
 
-                          className={`rounded-full border px-3 py-1 text-xs font-bold ${getAnalysisBadge(
 
-                            latestCompletedAssessment
 
-                              .analysis
+    );
 
-                              .overall_status
 
-                          )}`}
 
-                        >
+  }
 
-                          {formatLabel(
 
-                            latestCompletedAssessment
 
-                              .analysis
 
-                              .overall_status
 
-                          )}
 
-                        </span>
 
 
 
-                      )}
 
 
+  /* ==========================================================================
 
-                    </div>
 
 
+     DASHBOARD
 
 
 
-                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
+     ========================================================================== */
 
 
 
-                      <span>
 
-                        Sample:{" "}
 
-                        <strong className="text-slate-700">
 
-                          {
 
-                            latestCompletedAssessment
+  return (
 
-                              .sample
 
-                              .sample_id
 
-                          }
+    <div className="min-h-screen bg-slate-50">
 
-                        </strong>
 
-                      </span>
 
 
 
-                      <span>
 
-                        Tested:{" "}
 
-                        <strong className="text-slate-700">
+      {/* ============================================================
 
-                          {formatDate(
 
-                            latestCompletedAssessment
 
-                              .test
+          HEADER
 
-                              .tested_at ??
 
-                              latestCompletedAssessment
 
-                                .test
+      ============================================================ */}
 
-                                .created_at
 
-                          )}
 
-                        </strong>
 
-                      </span>
 
 
 
-                      <span>
+      <header className="border-b border-slate-200 bg-white">
 
-                        Method:{" "}
 
-                        <strong className="text-slate-700">
 
-                          {formatLabel(
 
-                            latestCompletedAssessment
 
-                              .test
 
-                              .test_method
 
-                          )}
+        <div className="mx-auto flex max-w-7xl flex-col gap-5 px-4 py-6 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
 
-                        </strong>
 
-                      </span>
 
 
 
-                    </div>
 
 
+          <div>
 
-                  </div>
 
 
 
 
 
-                  <div className="flex flex-wrap gap-2">
 
-                    <button
+            <div className="flex items-center gap-2 text-sm font-semibold text-green-700">
 
-                      type="button"
 
-                      onClick={() =>
 
-                        navigate(
+              <Sprout className="h-4 w-4" />
 
-                          `/farmer/reports/soil/${latestCompletedAssessment.test.id}`
 
-                        )
 
-                      }
+              SoilGenie Farmer Portal
 
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800"
 
-                    >
 
-                      View Full Report
+            </div>
 
-                      <ArrowRight className="h-4 w-4" />
 
-                    </button>
 
 
 
-                    <button
 
-                      type="button"
 
-                      disabled={
+            <h1 className="mt-2 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
 
-                        downloadingPdfId ===
 
-                        latestCompletedAssessment.test.id
 
-                      }
+              Welcome,{" "}
 
-                      onClick={() =>
 
-                        void downloadSoilReportPdf(
 
-                          latestCompletedAssessment
+              {farmer?.first_name ||
 
-                        )
 
-                      }
 
-                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-white px-4 py-2.5 text-sm font-semibold text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+                "Farmer"}
 
-                    >
 
-                      {downloadingPdfId ===
 
-                      latestCompletedAssessment.test.id ? (
+            </h1>
 
-                        <Loader2 className="h-4 w-4 animate-spin" />
 
-                      ) : (
 
-                        <Download className="h-4 w-4" />
 
-                      )}
 
-                      {downloadingPdfId ===
 
-                      latestCompletedAssessment.test.id
 
-                        ? "Preparing PDF..."
+            <p className="mt-2 text-sm text-slate-600">
 
-                        : "Download PDF"}
 
-                    </button>
 
-                  </div>
+              Understand your soil. See your crop
 
 
 
-                </div>
+              guidance. Know what to do next.
 
 
 
+            </p>
 
 
-                {latestCompletedAssessment
 
-                  .analysis
 
-                  ?.summary && (
 
 
 
-                  <div className="mt-6 rounded-2xl bg-slate-50 p-5">
+          </div>
 
 
 
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
 
-                      Soil Condition Summary
 
-                    </p>
 
 
 
-                    <p className="mt-2 text-sm leading-7 text-slate-700">
 
-                      {
 
-                        latestCompletedAssessment
 
-                          .analysis
+          <button
 
-                          .summary
 
-                      }
 
-                    </p>
+            type="button"
 
 
 
-                  </div>
+            disabled={refreshing}
 
 
 
-                )}
+            onClick={() =>
 
 
 
-              </div>
+              void loadDashboard(true)
 
 
 
+            }
 
 
-              <div className="grid grid-cols-2 gap-px bg-slate-200 sm:grid-cols-4 lg:grid-cols-8">
 
+            className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
 
 
-                <Measurement
 
-                  label="pH"
+          >
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
 
-                      .result
+            <RefreshCw
 
-                      ?.ph,
 
-                    2
 
-                  )}
+              className={`h-4 w-4 ${
 
-                />
 
 
+                refreshing
 
-                <Measurement
 
-                  label="Nitrogen"
 
-                  value={formatNumber(
+                  ? "animate-spin"
 
-                    latestCompletedAssessment
 
-                      .result
 
-                      ?.nitrogen_mg_kg,
+                  : ""
 
-                    1
 
-                  )}
 
-                  unit="mg/kg"
+              }`}
 
-                />
 
 
+            />
 
-                <Measurement
 
-                  label="Phosphorus"
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
 
-                      .result
 
-                      ?.phosphorus_mg_kg,
 
-                    1
+            {refreshing
 
-                  )}
 
-                  unit="mg/kg"
 
-                />
+              ? "Refreshing..."
 
 
 
-                <Measurement
+              : "Refresh"}
 
-                  label="Potassium"
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
+          </button>
 
-                      .result
 
-                      ?.potassium_mg_kg,
 
-                    1
 
-                  )}
 
-                  unit="mg/kg"
 
-                />
 
+        </div>
 
 
-                <Measurement
 
-                  label="Moisture"
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
 
-                      .result
 
-                      ?.moisture_percent,
+      </header>
 
-                    1
 
-                  )}
 
-                  unit="%"
 
-                />
 
 
 
-                <Measurement
 
-                  label="Organic Matter"
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
 
-                      .result
+      <main className="mx-auto max-w-7xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
 
-                      ?.organic_matter_percent,
 
-                    1
 
-                  )}
 
-                  unit="%"
 
-                />
 
 
+        {/* ============================================================
 
-                <Measurement
 
-                  label="EC"
 
-                  value={formatNumber(
+            FARMER PROFILE
 
-                    latestCompletedAssessment
 
-                      .result
 
-                      ?.electrical_conductivity_ds_m,
+        ============================================================ */}
 
-                    2
 
-                  )}
 
-                  unit="dS/m"
 
-                />
 
 
 
-                <Measurement
+        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 via-green-700 to-emerald-600 text-white shadow-lg">
 
-                  label="Temperature"
 
-                  value={formatNumber(
 
-                    latestCompletedAssessment
 
-                      .result
 
-                      ?.temperature_celsius,
 
-                    1
 
-                  )}
+          <div className="grid gap-8 p-6 sm:p-8 lg:grid-cols-[1.4fr_1fr]">
 
-                  unit="°C"
 
-                />
 
 
 
-              </div>
 
 
+            <div>
 
-            </div>
 
 
 
-          )}
 
 
 
-        </section>
+              <div className="flex items-center gap-4">
 
 
 
 
 
-        {/* ============================================================
 
-            MEASUREMENT SAFETY GATE
 
-        ============================================================ */}
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15">
 
 
 
-        {latestCompletedAssessment
+                  <UserRound className="h-7 w-7" />
 
-          ?.recommendation &&
 
-          recommendationBlocked && (
 
+                </div>
 
 
-          <section className="rounded-3xl border border-amber-300 bg-amber-50 p-6 sm:p-8">
 
 
 
-            <div className="flex flex-col gap-5 sm:flex-row">
 
 
+                <div>
 
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100">
 
-                <AlertTriangle className="h-6 w-6 text-amber-700" />
 
-              </div>
 
 
 
 
+                  <p className="text-sm font-medium text-green-100">
 
-              <div className="flex-1">
 
 
+                    Farmer Profile
 
-                <p className="text-sm font-bold uppercase tracking-wide text-amber-700">
 
-                  Measurement Verification Needed
 
-                </p>
+                  </p>
 
 
 
-                <h2 className="mt-2 text-xl font-bold text-slate-900">
 
-                  SoilGenie has paused the automatic
 
-                  crop recommendation
 
-                </h2>
 
+                  <h2 className="text-2xl font-bold">
 
 
 
+                    {farmer?.first_name}{" "}
 
-                {latestValidation?.summary && (
 
 
+                    {farmer?.last_name}
 
-                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
 
-                    {
 
-                      latestValidation
+                  </h2>
 
-                        .summary
 
-                    }
 
-                  </p>
 
 
 
-                )}
 
+                </div>
 
 
 
 
-                {latestValidation &&
 
-                  latestValidation
 
-                    .critical_measurements
 
-                    .length > 0 && (
+              </div>
 
 
 
-                    <div className="mt-5 grid gap-3 md:grid-cols-2">
 
 
 
-                      {latestValidation
 
-                        .critical_measurements
 
-                        .map(
 
-                          (
 
-                            measurement,
 
-                            index
+              <p className="mt-6 max-w-2xl text-sm leading-6 text-green-50">
 
-                          ) => (
 
 
+                Your SoilGenie account brings your
 
-                            <div
 
-                              key={`${measurement.parameter}-${index}`}
 
-                              className="rounded-2xl border border-amber-200 bg-white/80 p-4"
+                farms, soil tests, soil condition and
 
-                            >
 
 
+                crop decision-support guidance together
 
-                              <p className="text-sm font-bold text-slate-900">
 
-                                {formatLabel(
 
-                                  measurement.parameter
+                in one place.
 
-                                )}
 
-                              </p>
 
+              </p>
 
 
-                              {measurement.value !==
 
-                                null &&
 
-                                measurement.value !==
 
-                                  undefined && (
 
 
+            </div>
 
-                                  <p className="mt-1 text-sm font-semibold text-amber-800">
 
-                                    Recorded value:{" "}
 
-                                    {
 
-                                      measurement.value
 
-                                    }
 
-                                  </p>
 
 
 
-                                )}
 
 
+            <div className="grid grid-cols-2 gap-3">
 
-                              {measurement.message && (
 
 
 
-                                <p className="mt-2 text-sm leading-6 text-slate-600">
 
-                                  {
 
-                                    measurement.message
 
-                                  }
+              <ProfileItem
 
-                                </p>
 
 
+                label="Farmer ID"
 
-                              )}
 
 
+                value={
 
-                            </div>
 
 
+                  farmer?.farmer_id ||
 
-                          )
 
-                        )}
 
+                  "—"
 
 
-                    </div>
 
+                }
 
 
-                  )}
 
+              />
 
 
-              </div>
 
 
 
-            </div>
 
 
+              <ProfileItem
 
-          </section>
 
 
+                label="Status"
 
-        )}
 
 
+                value={formatLabel(
 
 
 
-        {/* ============================================================
+                  farmer?.status
 
-            CROP GUIDANCE
 
-        ============================================================ */}
 
+                )}
 
 
-        {latestCompletedAssessment
 
-          ?.recommendation && (
+              />
 
 
 
-          <section>
 
 
 
-            <div className="mb-4">
 
+              <ProfileItem
 
 
-              <h2 className="text-xl font-bold text-slate-900">
 
-                Crop Guidance
+                label="Location"
 
-              </h2>
 
 
+                value={getFarmerLocation(
 
-              <p className="mt-1 text-sm text-slate-500">
 
-                Decision-support guidance based on
 
-                the completed soil assessment.
+                  farmer
 
-              </p>
 
 
+                )}
 
-            </div>
 
 
+              />
 
 
 
-            {recommendationBlocked ? (
 
 
 
-              <div className="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm sm:p-8">
 
+              <ProfileItem
 
 
-                <div className="flex flex-col gap-5 sm:flex-row">
 
+                label="Farming Type"
 
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100">
 
-                    <Sprout className="h-6 w-6 text-amber-700" />
+                value={formatLabel(
 
-                  </div>
 
 
+                  farmer?.farming_type
 
 
 
-                  <div className="flex-1">
+                )}
 
 
 
-                    <p className="text-sm font-bold uppercase tracking-wide text-amber-700">
+              />
 
-                      Provisional Guidance
 
-                    </p>
 
 
 
 
 
-                    {provisionalBestCrop && (
+            </div>
 
 
 
-                      <>
 
-                        <p className="mt-3 text-sm text-slate-600">
 
-                          Strongest provisional soil
 
-                          match
 
-                        </p>
+          </div>
 
 
 
-                        <h3 className="mt-1 text-3xl font-bold text-slate-900">
 
-                          {provisionalBestCrop}
 
-                        </h3>
 
 
+        </section>
 
-                        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-amber-100 px-4 py-2 text-sm font-bold text-amber-800">
 
-                          <AlertTriangle className="h-4 w-4" />
 
-                          Not a planting recommendation
 
-                        </div>
 
-                      </>
 
 
 
-                    )}
 
 
 
+        {/* ============================================================
 
 
-                    <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-700">
 
-                      {
+            STATISTICS
 
-                        latestCompletedAssessment
 
-                          .recommendation
 
-                          .farmer_summary
+        ============================================================ */}
 
-                      }
 
-                    </p>
 
 
 
-                  </div>
 
 
+        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-                </div>
 
 
 
-              </div>
 
 
 
-            ) : (
+          <StatCard
 
 
 
-              <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
+            title="My Farms"
 
 
 
-                <div className="flex flex-col gap-5 sm:flex-row">
+            value={String(
 
 
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100">
+              farms.length
 
-                    <Sprout className="h-6 w-6 text-emerald-700" />
 
-                  </div>
 
+            )}
 
 
 
+            subtitle="Registered farms"
 
-                  <div className="flex-1">
 
 
+            icon={
 
-                    <p className="text-sm font-bold uppercase tracking-wide text-emerald-700">
 
-                      Current Crop Guidance
 
-                    </p>
+              <Tractor className="h-5 w-5 text-green-700" />
 
 
 
+            }
 
 
-                    {bestCrop ? (
 
+            iconClass="bg-green-100"
 
 
-                      <>
 
-                        <p className="mt-3 text-sm text-slate-600">
+          />
 
-                          Best safe crop match from
 
-                          the current screening
 
-                        </p>
 
 
 
-                        <h3 className="mt-1 text-3xl font-bold text-slate-900">
 
-                          {bestCrop}
+          <StatCard
 
-                        </h3>
 
-                      </>
 
+            title="Total Farm Area"
 
 
-                    ) : (
 
+            value={`${formatNumber(
 
 
-                      <h3 className="mt-3 text-xl font-bold text-slate-900">
 
-                        Review your crop assessment
+              totalFarmArea,
 
-                      </h3>
 
 
+              2
 
-                    )}
 
 
+            )} ha`}
 
 
 
-                    <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">
+            subtitle="Across registered farms"
 
-                      {
 
-                        latestCompletedAssessment
 
-                          .recommendation
+            icon={
 
-                          .farmer_summary
 
-                      }
 
-                    </p>
+              <MapPin className="h-5 w-5 text-blue-700" />
 
 
 
-                  </div>
+            }
 
 
 
-                </div>
+            iconClass="bg-blue-100"
 
 
 
-              </div>
+          />
 
 
 
-            )}
 
 
 
-          </section>
 
+          <StatCard
 
 
-        )}
 
+            title="Soil Tests"
 
 
 
+            value={String(
 
-        {/* ============================================================
 
-            NEXT ACTION
 
-        ============================================================ */}
+              soilRecords.length
 
 
 
-        {latestCompletedAssessment
+            )}
 
-          ?.recommendation && (
 
 
+            subtitle="Recorded tests"
 
-          <section>
 
 
+            icon={
 
-            <div className="mb-4">
 
 
+              <TestTube2 className="h-5 w-5 text-violet-700" />
 
-              <h2 className="text-xl font-bold text-slate-900">
 
-                What Should I Do Next?
 
-              </h2>
+            }
 
 
 
-              <p className="mt-1 text-sm text-slate-500">
+            iconClass="bg-violet-100"
 
-                Practical actions from your latest
 
-                completed soil assessment.
 
-              </p>
+          />
 
 
 
-            </div>
 
 
 
 
+          <StatCard
 
-            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
 
 
+            title="Reports Ready"
 
-              {nextActions.length >
 
-              0 ? (
 
+            value={String(
 
 
-                <div className="space-y-3">
 
+              completedRecords.length
 
 
-                  {nextActions.map(
 
-                    (action, index) => (
+            )}
 
 
 
-                      <div
+            subtitle="Completed assessments"
 
-                        key={`${action}-${index}`}
 
-                        className="flex gap-3 rounded-2xl bg-slate-50 p-4"
 
-                      >
+            icon={
 
 
 
-                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
+              <FileText className="h-5 w-5 text-amber-700" />
 
-                          {index + 1}
 
-                        </div>
 
+            }
 
 
-                        <p className="text-sm leading-6 text-slate-700">
 
-                          {action}
+            iconClass="bg-amber-100"
 
-                        </p>
 
 
+          />
 
-                      </div>
 
 
 
-                    )
 
-                  )}
 
 
+        </section>
 
-                </div>
 
 
 
-              ) : (
 
 
 
-                <div className="flex gap-3">
 
 
 
-                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
 
+        {/* ============================================================
 
 
-                  <p className="text-sm leading-6 text-slate-600">
 
-                    No additional action has been
+            TESTS IN PROGRESS
 
-                    recorded for this assessment.
 
-                    Review the full soil report for
 
-                    complete guidance.
+        ============================================================ */}
 
-                  </p>
 
 
 
-                </div>
 
 
 
-              )}
+        {newerPendingRecords.length >
 
 
 
-            </div>
+          0 && (
 
 
 
-          </section>
 
 
 
-        )}
 
+          <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
 
 
 
 
-        {/* ============================================================
 
-            MY FARMS
 
-        ============================================================ */}
 
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
 
 
-        <section>
 
 
 
-          <div className="mb-4">
 
 
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-100">
 
-            <h2 className="text-xl font-bold text-slate-900">
 
-              My Farms
 
-            </h2>
+                <Clock3 className="h-5 w-5 text-blue-700" />
 
 
 
-            <p className="mt-1 text-sm text-slate-500">
+              </div>
 
-              Farms linked to your SoilGenie profile.
 
-            </p>
 
 
 
-          </div>
 
 
 
 
 
-          {farms.length === 0 ? (
 
+              <div className="flex-1">
 
 
-            <EmptyState
 
-              icon={
 
-                <Tractor className="h-7 w-7 text-green-700" />
 
-              }
 
-              title="No farm registered yet"
 
-              description="Contact your SoilGenie field agent to register your farm."
+                <p className="text-sm font-bold uppercase tracking-wide text-blue-700">
 
-            />
 
 
+                  Tests In Progress
 
-          ) : (
 
 
+                </p>
 
-            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
 
 
 
-              {farms.map(
 
-                (farm) => (
 
 
+                <h2 className="mt-1 text-lg font-bold text-slate-900">
 
-                  <article
 
-                    key={farm.id}
 
-                    className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                  {newerPendingRecords.length}{" "}
 
-                  >
 
 
+                  newer soil{" "}
 
-                    <div className="flex items-start justify-between gap-4">
 
 
+                  {newerPendingRecords.length ===
 
-                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100">
 
-                        <Tractor className="h-5 w-5 text-green-700" />
 
-                      </div>
+                  1
 
 
 
-                      <span
+                    ? "test is"
 
-                        className={`rounded-full px-3 py-1 text-xs font-bold ${
 
-                          farm.status ===
 
-                          "ACTIVE"
+                    : "tests are"}{" "}
 
-                            ? "bg-emerald-100 text-emerald-700"
 
-                            : "bg-slate-100 text-slate-600"
 
-                        }`}
+                  awaiting results
 
-                      >
 
-                        {formatLabel(
 
-                          farm.status
+                </h2>
 
-                        )}
 
-                      </span>
 
 
 
-                    </div>
 
 
+                <p className="mt-2 text-sm leading-6 text-slate-600">
 
 
 
-                    <h3 className="mt-5 text-lg font-bold text-slate-900">
+                  Your latest completed assessment
 
-                      {farm.farm_name}
 
-                    </h3>
 
+                  remains available below while the
 
 
-                    <p className="mt-1 text-xs font-medium text-slate-500">
 
-                      {farm.farm_id}
+                  newer soil{" "}
 
-                    </p>
 
 
+                  {newerPendingRecords.length ===
 
 
 
-                    <div className="mt-5 space-y-3">
+                  1
 
 
 
-                      <FarmDetail
+                    ? "test is"
 
-                        label="Farm Size"
 
-                        value={`${formatNumber(
 
-                          farm.farm_size,
+                    : "tests are"}{" "}
 
-                          2
 
-                        )} ha`}
 
-                      />
+                  being processed.
 
 
 
-                      <FarmDetail
+                </p>
 
-                        label="Farming Type"
 
-                        value={formatLabel(
 
-                          farm.farming_type
 
-                        )}
 
-                      />
 
 
 
-                      <FarmDetail
 
-                        label="Irrigation"
 
-                        value={formatLabel(
 
-                          farm.irrigation_type
+                <div className="mt-4 flex flex-wrap gap-2">
 
-                        )}
 
-                      />
 
 
 
-                      <FarmDetail
 
-                        label="Ownership"
 
-                        value={formatLabel(
+                  {newerPendingRecords.map(
 
-                          farm.ownership_type
 
-                        )}
 
-                      />
+                    (record) => (
 
 
 
-                    </div>
 
 
 
 
+                      <span
 
-                    <div className="mt-5 flex items-start gap-2 border-t border-slate-100 pt-4">
 
 
+                        key={record.test.id}
 
-                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
 
 
+                        className="rounded-xl border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700"
 
-                      <p className="text-sm leading-5 text-slate-500">
 
-                        {getFarmLocation(
 
-                          farm
+                      >
 
-                        )}
 
-                      </p>
 
+                        {
 
 
-                    </div>
 
+                          record.sample
 
 
-                  </article>
 
+                            .sample_id
 
 
-                )
 
-              )}
+                        }{" "}
 
 
 
-            </div>
+                        ·{" "}
 
 
 
-          )}
+                        {formatLabel(
 
 
 
-        </section>
+                          record.test
 
 
 
+                            .status
 
 
-        {/* ============================================================
 
-            RECENT SOIL REPORTS
+                        )}
 
-        ============================================================ */}
 
 
+                      </span>
 
-        <section>
 
 
 
-          <div className="mb-4">
 
 
 
-            <h2 className="text-xl font-bold text-slate-900">
+                    )
 
-              Recent Soil Reports
 
-            </h2>
 
+                  )}
 
 
-            <p className="mt-1 text-sm text-slate-500">
 
-              Your latest completed and pending soil
 
-              tests.
 
-            </p>
 
 
+                </div>
 
-          </div>
 
 
 
 
 
-          {soilRecords.length === 0 ? (
 
+              </div>
 
 
-            <EmptyState
 
-              icon={
 
-                <FileText className="h-7 w-7 text-green-700" />
 
-              }
 
-              title="No soil reports yet"
 
-              description="Your soil test history will appear here."
+            </div>
 
-            />
 
 
 
-          ) : (
 
 
 
-            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+          </section>
 
 
 
-              <div className="overflow-x-auto">
 
 
 
-                <table className="min-w-full divide-y divide-slate-200">
 
+        )}
 
 
-                  <thead className="bg-slate-50">
 
 
 
-                    <tr>
 
 
 
-                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
 
-                        Sample
 
-                      </th>
 
+        {pdfError && (
 
 
-                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
 
-                        Farm
+          <section className="rounded-2xl border border-red-200 bg-red-50 px-5 py-4">
 
-                      </th>
 
 
+            <div className="flex items-start gap-3">
 
-                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
 
-                        Date
 
-                      </th>
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-700" />
 
 
 
-                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+              <div className="flex-1">
 
-                        Status
 
-                      </th>
 
+                <p className="text-sm font-bold text-red-800">
 
 
-                      <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">
 
-                        Action
+                  PDF download failed
 
-                      </th>
 
 
+                </p>
 
-                    </tr>
 
 
+                <p className="mt-1 text-sm text-red-700">
 
-                  </thead>
 
 
+                  {pdfError}
 
 
 
-                  <tbody className="divide-y divide-slate-100">
+                </p>
 
 
 
-                    {soilRecords
+              </div>
 
-                      .slice(0, 5)
 
-                      .map(
 
-                        (record) => (
+              <button
 
 
 
-                          <tr
+                type="button"
 
-                            key={
 
-                              record.test.id
 
-                            }
+                onClick={() => setPdfError(null)}
 
-                            className="hover:bg-slate-50"
 
-                          >
 
+                className="text-sm font-semibold text-red-700 hover:text-red-900"
 
 
-                            <td className="whitespace-nowrap px-5 py-4">
 
+              >
 
 
-                              <p className="text-sm font-semibold text-slate-900">
 
-                                {
+                Dismiss
 
-                                  record
 
-                                    .sample
 
-                                    .sample_id
+              </button>
 
-                                }
 
-                              </p>
 
+            </div>
 
 
-                            </td>
 
+          </section>
 
 
 
+        )}
 
-                            <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
 
-                              {
 
-                                record
 
-                                  .farm
 
-                                  .farm_name
 
-                              }
 
-                            </td>
+        {/* ============================================================
 
 
 
+            LATEST COMPLETED ASSESSMENT
 
 
-                            <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
 
-                              {formatDate(
+        ============================================================ */}
 
-                                record
 
-                                  .test
 
-                                  .tested_at ??
 
-                                  record
 
-                                    .test
 
-                                    .created_at
 
-                              )}
+        <section>
 
-                            </td>
 
 
 
 
 
-                            <td className="whitespace-nowrap px-5 py-4">
 
+          <div className="mb-4">
 
 
-                              <span
 
-                                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${getTestStatusClass(
 
-                                  record.test
 
-                                    .status
 
-                                )}`}
 
-                              >
+            <h2 className="text-xl font-bold text-slate-900">
 
 
 
-                                {record.test
+              Latest Completed Soil Assessment
 
-                                  .status ===
 
-                                  "COMPLETED" && (
 
-                                  <CheckCircle2 className="h-3.5 w-3.5" />
+            </h2>
 
-                                )}
 
 
 
-                                {record.test
 
-                                  .status ===
 
-                                  "COMPLETED"
 
-                                  ? "Report Ready"
+            <p className="mt-1 text-sm text-slate-500">
 
-                                  : formatLabel(
 
-                                      record
 
-                                        .test
+              Your newest completed soil test with
 
-                                        .status
 
-                                    )}
 
+              available measurements.
 
 
-                              </span>
 
+            </p>
 
 
-                            </td>
 
 
 
 
 
-                            <td className="whitespace-nowrap px-5 py-4 text-right">
+          </div>
 
-                              {record.test
 
-                                .status ===
 
-                                "COMPLETED" &&
 
-                              record.result ? (
 
 
 
-                                <div className="flex flex-wrap justify-end gap-2">
 
-                                  <button
 
-                                    type="button"
 
-                                    onClick={() =>
 
-                                      navigate(
+          {!latestCompletedAssessment ? (
 
-                                        `/farmer/reports/soil/${record.test.id}`
 
-                                      )
 
-                                    }
 
-                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-green-700 transition hover:text-green-800"
 
-                                  >
 
-                                    View Report
 
-                                    <ArrowRight className="h-4 w-4" />
+            <EmptyState
 
-                                  </button>
 
 
+              icon={
 
-                                  <button
 
-                                    type="button"
 
-                                    disabled={
+                <TestTube2 className="h-7 w-7 text-green-700" />
 
-                                      downloadingPdfId ===
 
-                                      record.test.id
 
-                                    }
+              }
 
-                                    onClick={() =>
 
-                                      void downloadSoilReportPdf(
 
-                                        record
+              title="No completed soil assessment yet"
 
-                                      )
 
-                                    }
 
-                                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+              description="Your completed soil assessment will appear here once a SoilGenie field agent finishes testing your soil sample."
 
-                                  >
 
-                                    {downloadingPdfId ===
 
-                                    record.test.id ? (
+            />
 
-                                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
 
-                                    ) : (
 
-                                      <Download className="h-3.5 w-3.5" />
 
-                                    )}
 
-                                    PDF
 
-                                  </button>
 
-                                </div>
+          ) : (
 
 
 
-                              ) : (
 
 
 
-                                <span className="text-xs font-medium text-slate-400">
 
-                                  Awaiting result
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
 
-                                </span>
 
 
 
-                              )}
 
 
 
-                            </td>
+              <div className="p-6 sm:p-7">
 
 
 
-                          </tr>
 
 
 
-                        )
 
-                      )}
+                <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
 
 
 
-                  </tbody>
 
 
 
-                </table>
 
+                  <div>
 
 
-              </div>
 
 
 
-            </div>
 
 
+                    <div className="flex flex-wrap items-center gap-3">
 
-          )}
 
 
 
-        </section>
 
 
 
+                      <h3 className="text-xl font-bold text-slate-900">
 
 
-        {/* ============================================================
 
-            DECISION SUPPORT NOTICE
+                        {
 
-        ============================================================ */}
 
 
+                          latestCompletedAssessment
 
-        <section className="rounded-2xl border border-slate-200 bg-white p-5">
 
 
+                            .farm
 
-          <div className="flex gap-3">
 
 
+                            .farm_name
 
-            <Leaf className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
 
 
+                        }
 
-            <div>
 
 
+                      </h3>
 
-              <p className="text-sm font-bold text-slate-800">
 
-                About SoilGenie guidance
 
-              </p>
 
 
 
-              <p className="mt-1 text-xs leading-5 text-slate-500">
 
-                SoilGenie provides decision-support
 
-                screening based on available soil
 
-                measurements. Crop suitability should
 
-                also be considered alongside verified
 
-                soil measurements, local field
+                      {latestCompletedAssessment
 
-                conditions and appropriate agronomic
 
-                advice.
 
-              </p>
+                        .analysis && (
 
 
 
-            </div>
 
 
 
-          </div>
 
+                        <span
 
 
-        </section>
 
+                          className={`rounded-full border px-3 py-1 text-xs font-bold ${getAnalysisBadge(
 
 
-      </main>
 
+                            latestCompletedAssessment
 
 
-    </div>
 
-  );
+                              .analysis
+
+
+
+                              .overall_status
+
+
+
+                          )}`}
+
+
+
+                        >
+
+
+
+                          {formatLabel(
+
+
+
+                            latestCompletedAssessment
+
+
+
+                              .analysis
+
+
+
+                              .overall_status
+
+
+
+                          )}
+
+
+
+                        </span>
+
+
+
+
+
+
+
+                      )}
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-sm text-slate-500">
+
+
+
+
+
+
+
+                      <span>
+
+
+
+                        Sample:{" "}
+
+
+
+                        <strong className="text-slate-700">
+
+
+
+                          {
+
+
+
+                            latestCompletedAssessment
+
+
+
+                              .sample
+
+
+
+                              .sample_id
+
+
+
+                          }
+
+
+
+                        </strong>
+
+
+
+                      </span>
+
+
+
+
+
+
+
+                      <span>
+
+
+
+                        Tested:{" "}
+
+
+
+                        <strong className="text-slate-700">
+
+
+
+                          {formatDate(
+
+
+
+                            latestCompletedAssessment
+
+
+
+                              .test
+
+
+
+                              .tested_at ??
+
+
+
+                              latestCompletedAssessment
+
+
+
+                                .test
+
+
+
+                                .created_at
+
+
+
+                          )}
+
+
+
+                        </strong>
+
+
+
+                      </span>
+
+
+
+
+
+
+
+                      <span>
+
+
+
+                        Method:{" "}
+
+
+
+                        <strong className="text-slate-700">
+
+
+
+                          {formatLabel(
+
+
+
+                            latestCompletedAssessment
+
+
+
+                              .test
+
+
+
+                              .test_method
+
+
+
+                          )}
+
+
+
+                        </strong>
+
+
+
+                      </span>
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+                  <div className="flex flex-wrap gap-2">
+
+
+
+                    <button
+
+
+
+                      type="button"
+
+
+
+                      onClick={() =>
+
+
+
+                        navigate(
+
+
+
+                          `/farmer/reports/soil/${latestCompletedAssessment.test.id}`
+
+
+
+                        )
+
+
+
+                      }
+
+
+
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-800"
+
+
+
+                    >
+
+
+
+                      View Full Report
+
+
+
+                      <ArrowRight className="h-4 w-4" />
+
+
+
+                    </button>
+
+
+
+
+
+
+
+                    <button
+
+
+
+                      type="button"
+
+
+
+                      disabled={
+
+
+
+                        downloadingPdfId ===
+
+
+
+                        latestCompletedAssessment.test.id
+
+
+
+                      }
+
+
+
+                      onClick={() =>
+
+
+
+                        void downloadSoilReportPdf(
+
+
+
+                          latestCompletedAssessment
+
+
+
+                        )
+
+
+
+                      }
+
+
+
+                      className="inline-flex items-center justify-center gap-2 rounded-xl border border-green-200 bg-white px-4 py-2.5 text-sm font-semibold text-green-800 transition hover:bg-green-50 disabled:cursor-not-allowed disabled:opacity-60"
+
+
+
+                    >
+
+
+
+                      {downloadingPdfId ===
+
+
+
+                      latestCompletedAssessment.test.id ? (
+
+
+
+                        <Loader2 className="h-4 w-4 animate-spin" />
+
+
+
+                      ) : (
+
+
+
+                        <Download className="h-4 w-4" />
+
+
+
+                      )}
+
+
+
+                      {downloadingPdfId ===
+
+
+
+                      latestCompletedAssessment.test.id
+
+
+
+                        ? "Preparing PDF..."
+
+
+
+                        : "Download PDF"}
+
+
+
+                    </button>
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+
+
+
+
+                {latestCompletedAssessment
+
+
+
+                  .analysis
+
+
+
+                  ?.summary && (
+
+
+
+
+
+
+
+                  <div className="mt-6 rounded-2xl bg-slate-50 p-5">
+
+
+
+
+
+
+
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                      Soil Condition Summary
+
+
+
+                    </p>
+
+
+
+
+
+
+
+                    <p className="mt-2 text-sm leading-7 text-slate-700">
+
+
+
+                      {
+
+
+
+                        latestCompletedAssessment
+
+
+
+                          .analysis
+
+
+
+                          .summary
+
+
+
+                      }
+
+
+
+                    </p>
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                )}
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+              <div className="grid grid-cols-2 gap-px bg-slate-200 sm:grid-cols-4 lg:grid-cols-8">
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="pH"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.ph,
+
+
+
+                    2
+
+
+
+                  )}
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Nitrogen"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.nitrogen_mg_kg,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="mg/kg"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Phosphorus"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.phosphorus_mg_kg,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="mg/kg"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Potassium"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.potassium_mg_kg,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="mg/kg"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Moisture"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.moisture_percent,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="%"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Organic Matter"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.organic_matter_percent,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="%"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="EC"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.electrical_conductivity_ds_m,
+
+
+
+                    2
+
+
+
+                  )}
+
+
+
+                  unit="dS/m"
+
+
+
+                />
+
+
+
+
+
+
+
+                <Measurement
+
+
+
+                  label="Temperature"
+
+
+
+                  value={formatNumber(
+
+
+
+                    latestCompletedAssessment
+
+
+
+                      .result
+
+
+
+                      ?.temperature_celsius,
+
+
+
+                    1
+
+
+
+                  )}
+
+
+
+                  unit="°C"
+
+
+
+                />
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          )}
+
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            MEASUREMENT SAFETY GATE
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        {latestCompletedAssessment
+
+
+
+          ?.recommendation &&
+
+
+
+          recommendationBlocked && (
+
+
+
+
+
+
+
+          <section className="rounded-3xl border border-amber-300 bg-amber-50 p-6 sm:p-8">
+
+
+
+
+
+
+
+            <div className="flex flex-col gap-5 sm:flex-row">
+
+
+
+
+
+
+
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100">
+
+
+
+                <AlertTriangle className="h-6 w-6 text-amber-700" />
+
+
+
+              </div>
+
+
+
+
+
+
+
+
+
+
+
+              <div className="flex-1">
+
+
+
+
+
+
+
+                <p className="text-sm font-bold uppercase tracking-wide text-amber-700">
+
+
+
+                  Measurement Verification Needed
+
+
+
+                </p>
+
+
+
+
+
+
+
+                <h2 className="mt-2 text-xl font-bold text-slate-900">
+
+
+
+                  SoilGenie has paused the automatic
+
+
+
+                  crop recommendation
+
+
+
+                </h2>
+
+
+
+
+
+
+
+
+
+
+
+                {latestValidation?.summary && (
+
+
+
+
+
+
+
+                  <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-700">
+
+
+
+                    {
+
+
+
+                      latestValidation
+
+
+
+                        .summary
+
+
+
+                    }
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                )}
+
+
+
+
+
+
+
+
+
+
+
+                {latestValidation &&
+
+
+
+                  latestValidation
+
+
+
+                    .critical_measurements
+
+
+
+                    .length > 0 && (
+
+
+
+
+
+
+
+                    <div className="mt-5 grid gap-3 md:grid-cols-2">
+
+
+
+
+
+
+
+                      {latestValidation
+
+
+
+                        .critical_measurements
+
+
+
+                        .map(
+
+
+
+                          (
+
+
+
+                            measurement,
+
+
+
+                            index
+
+
+
+                          ) => (
+
+
+
+
+
+
+
+                            <div
+
+
+
+                              key={`${measurement.parameter}-${index}`}
+
+
+
+                              className="rounded-2xl border border-amber-200 bg-white/80 p-4"
+
+
+
+                            >
+
+
+
+
+
+
+
+                              <p className="text-sm font-bold text-slate-900">
+
+
+
+                                {formatLabel(
+
+
+
+                                  measurement.parameter
+
+
+
+                                )}
+
+
+
+                              </p>
+
+
+
+
+
+
+
+                              {measurement.value !==
+
+
+
+                                null &&
+
+
+
+                                measurement.value !==
+
+
+
+                                  undefined && (
+
+
+
+
+
+
+
+                                  <p className="mt-1 text-sm font-semibold text-amber-800">
+
+
+
+                                    Recorded value:{" "}
+
+
+
+                                    {
+
+
+
+                                      measurement.value
+
+
+
+                                    }
+
+
+
+                                  </p>
+
+
+
+
+
+
+
+                                )}
+
+
+
+
+
+
+
+                              {measurement.message && (
+
+
+
+
+
+
+
+                                <p className="mt-2 text-sm leading-6 text-slate-600">
+
+
+
+                                  {
+
+
+
+                                    measurement.message
+
+
+
+                                  }
+
+
+
+                                </p>
+
+
+
+
+
+
+
+                              )}
+
+
+
+
+
+
+
+                            </div>
+
+
+
+
+
+
+
+                          )
+
+
+
+                        )}
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                  )}
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          </section>
+
+
+
+
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            CROP GUIDANCE
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        {latestCompletedAssessment
+
+
+
+          ?.recommendation && (
+
+
+
+
+
+
+
+          <section>
+
+
+
+
+
+
+
+            <div className="mb-4">
+
+
+
+
+
+
+
+              <h2 className="text-xl font-bold text-slate-900">
+
+
+
+                Crop Guidance
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-1 text-sm text-slate-500">
+
+
+
+                Decision-support guidance based on
+
+
+
+                the completed soil assessment.
+
+
+
+              </p>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            {recommendationBlocked ? (
+
+
+
+
+
+
+
+              <div className="rounded-3xl border border-amber-200 bg-white p-6 shadow-sm sm:p-8">
+
+
+
+
+
+
+
+                <div className="flex flex-col gap-5 sm:flex-row">
+
+
+
+
+
+
+
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-100">
+
+
+
+                    <Sprout className="h-6 w-6 text-amber-700" />
+
+
+
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+                  <div className="flex-1">
+
+
+
+
+
+
+
+                    <p className="text-sm font-bold uppercase tracking-wide text-amber-700">
+
+
+
+                      Provisional Guidance
+
+
+
+                    </p>
+
+
+
+
+
+
+
+
+
+
+
+                    {provisionalBestCrop && (
+
+
+
+
+
+
+
+                      <>
+
+
+
+                        <p className="mt-3 text-sm text-slate-600">
+
+
+
+                          Strongest provisional soil
+
+
+
+                          match
+
+
+
+                        </p>
+
+
+
+
+
+
+
+                        <h3 className="mt-1 text-3xl font-bold text-slate-900">
+
+
+
+                          {provisionalBestCrop}
+
+
+
+                        </h3>
+
+
+
+
+
+
+
+                        <div className="mt-4 inline-flex items-center gap-2 rounded-xl bg-amber-100 px-4 py-2 text-sm font-bold text-amber-800">
+
+
+
+                          <AlertTriangle className="h-4 w-4" />
+
+
+
+                          Not a planting recommendation
+
+
+
+                        </div>
+
+
+
+                      </>
+
+
+
+
+
+
+
+                    )}
+
+
+
+
+
+
+
+
+
+
+
+                    <p className="mt-5 max-w-3xl text-sm leading-7 text-slate-700">
+
+
+
+                      {
+
+
+
+                        latestCompletedAssessment
+
+
+
+                          .recommendation
+
+
+
+                          .farmer_summary
+
+
+
+                      }
+
+
+
+                    </p>
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+            ) : (
+
+
+
+
+
+
+
+              <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-6 sm:p-8">
+
+
+
+
+
+
+
+                <div className="flex flex-col gap-5 sm:flex-row">
+
+
+
+
+
+
+
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-100">
+
+
+
+                    <Sprout className="h-6 w-6 text-emerald-700" />
+
+
+
+                  </div>
+
+
+
+
+
+
+
+
+
+
+
+                  <div className="flex-1">
+
+
+
+
+
+
+
+                    <p className="text-sm font-bold uppercase tracking-wide text-emerald-700">
+
+
+
+                      Current Crop Guidance
+
+
+
+                    </p>
+
+
+
+
+
+
+
+
+
+
+
+                    {bestCrop ? (
+
+
+
+
+
+
+
+                      <>
+
+
+
+                        <p className="mt-3 text-sm text-slate-600">
+
+
+
+                          Best safe crop match from
+
+
+
+                          the current screening
+
+
+
+                        </p>
+
+
+
+
+
+
+
+                        <h3 className="mt-1 text-3xl font-bold text-slate-900">
+
+
+
+                          {bestCrop}
+
+
+
+                        </h3>
+
+
+
+                      </>
+
+
+
+
+
+
+
+                    ) : (
+
+
+
+
+
+
+
+                      <h3 className="mt-3 text-xl font-bold text-slate-900">
+
+
+
+                        Review your crop assessment
+
+
+
+                      </h3>
+
+
+
+
+
+
+
+                    )}
+
+
+
+
+
+
+
+
+
+
+
+                    <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-700">
+
+
+
+                      {
+
+
+
+                        latestCompletedAssessment
+
+
+
+                          .recommendation
+
+
+
+                          .farmer_summary
+
+
+
+                      }
+
+
+
+                    </p>
+
+
+
+
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+            )}
+
+
+
+
+
+
+
+          </section>
+
+
+
+
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            NEXT ACTION
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        {latestCompletedAssessment
+
+
+
+          ?.recommendation && (
+
+
+
+
+
+
+
+          <section>
+
+
+
+
+
+
+
+            <div className="mb-4">
+
+
+
+
+
+
+
+              <h2 className="text-xl font-bold text-slate-900">
+
+
+
+                What Should I Do Next?
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-1 text-sm text-slate-500">
+
+
+
+                Practical actions from your latest
+
+
+
+                completed soil assessment.
+
+
+
+              </p>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+
+
+
+
+            <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+
+
+
+
+
+
+
+              {nextActions.length >
+
+
+
+              0 ? (
+
+
+
+
+
+
+
+                <div className="space-y-3">
+
+
+
+
+
+
+
+                  {nextActions.map(
+
+
+
+                    (action, index) => (
+
+
+
+
+
+
+
+                      <div
+
+
+
+                        key={`${action}-${index}`}
+
+
+
+                        className="flex gap-3 rounded-2xl bg-slate-50 p-4"
+
+
+
+                      >
+
+
+
+
+
+
+
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-green-100 text-xs font-bold text-green-700">
+
+
+
+                          {index + 1}
+
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <p className="text-sm leading-6 text-slate-700">
+
+
+
+                          {action}
+
+
+
+                        </p>
+
+
+
+
+
+
+
+                      </div>
+
+
+
+
+
+
+
+                    )
+
+
+
+                  )}
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+              ) : (
+
+
+
+
+
+
+
+                <div className="flex gap-3">
+
+
+
+
+
+
+
+                  <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
+
+
+
+
+
+
+
+                  <p className="text-sm leading-6 text-slate-600">
+
+
+
+                    No additional action has been
+
+
+
+                    recorded for this assessment.
+
+
+
+                    Review the full soil report for
+
+
+
+                    complete guidance.
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                </div>
+
+
+
+
+
+
+
+              )}
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          </section>
+
+
+
+
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            MY FARMS
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        <section>
+
+
+
+
+
+
+
+          <div className="mb-4">
+
+
+
+
+
+
+
+            <h2 className="text-xl font-bold text-slate-900">
+
+
+
+              My Farms
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <p className="mt-1 text-sm text-slate-500">
+
+
+
+              Farms linked to your SoilGenie profile.
+
+
+
+            </p>
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+          {farms.length === 0 ? (
+
+
+
+
+
+
+
+            <EmptyState
+
+
+
+              icon={
+
+
+
+                <Tractor className="h-7 w-7 text-green-700" />
+
+
+
+              }
+
+
+
+              title="No farm registered yet"
+
+
+
+              description="Contact your SoilGenie field agent to register your farm."
+
+
+
+            />
+
+
+
+
+
+
+
+          ) : (
+
+
+
+
+
+
+
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+
+
+
+
+
+
+              {farms.map(
+
+
+
+                (farm) => (
+
+
+
+
+
+
+
+                  <article
+
+
+
+                    key={farm.id}
+
+
+
+                    className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+
+
+
+                  >
+
+
+
+
+
+
+
+                    <div className="flex items-start justify-between gap-4">
+
+
+
+
+
+
+
+                      <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-green-100">
+
+
+
+                        <Tractor className="h-5 w-5 text-green-700" />
+
+
+
+                      </div>
+
+
+
+
+
+
+
+                      <span
+
+
+
+                        className={`rounded-full px-3 py-1 text-xs font-bold ${
+
+
+
+                          farm.status ===
+
+
+
+                          "ACTIVE"
+
+
+
+                            ? "bg-emerald-100 text-emerald-700"
+
+
+
+                            : "bg-slate-100 text-slate-600"
+
+
+
+                        }`}
+
+
+
+                      >
+
+
+
+                        {formatLabel(
+
+
+
+                          farm.status
+
+
+
+                        )}
+
+
+
+                      </span>
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+                    <h3 className="mt-5 text-lg font-bold text-slate-900">
+
+
+
+                      {farm.farm_name}
+
+
+
+                    </h3>
+
+
+
+
+
+
+
+                    <p className="mt-1 text-xs font-medium text-slate-500">
+
+
+
+                      {farm.farm_id}
+
+
+
+                    </p>
+
+
+
+
+
+
+
+
+
+
+
+                    <div className="mt-5 space-y-3">
+
+
+
+
+
+
+
+                      <FarmDetail
+
+
+
+                        label="Farm Size"
+
+
+
+                        value={`${formatNumber(
+
+
+
+                          farm.farm_size,
+
+
+
+                          2
+
+
+
+                        )} ha`}
+
+
+
+                      />
+
+
+
+
+
+
+
+                      <FarmDetail
+
+
+
+                        label="Farming Type"
+
+
+
+                        value={formatLabel(
+
+
+
+                          farm.farming_type
+
+
+
+                        )}
+
+
+
+                      />
+
+
+
+
+
+
+
+                      <FarmDetail
+
+
+
+                        label="Irrigation"
+
+
+
+                        value={formatLabel(
+
+
+
+                          farm.irrigation_type
+
+
+
+                        )}
+
+
+
+                      />
+
+
+
+
+
+
+
+                      <FarmDetail
+
+
+
+                        label="Ownership"
+
+
+
+                        value={formatLabel(
+
+
+
+                          farm.ownership_type
+
+
+
+                        )}
+
+
+
+                      />
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+
+
+
+
+                    <div className="mt-5 flex items-start gap-2 border-t border-slate-100 pt-4">
+
+
+
+
+
+
+
+                      <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-slate-400" />
+
+
+
+
+
+
+
+                      <p className="text-sm leading-5 text-slate-500">
+
+
+
+                        {getFarmLocation(
+
+
+
+                          farm
+
+
+
+                        )}
+
+
+
+                      </p>
+
+
+
+
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                  </article>
+
+
+
+
+
+
+
+                )
+
+
+
+              )}
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          )}
+
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            RECENT SOIL REPORTS
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        <section>
+
+
+
+
+
+
+
+          <div className="mb-4">
+
+
+
+
+
+
+
+            <h2 className="text-xl font-bold text-slate-900">
+
+
+
+              Recent Soil Reports
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <p className="mt-1 text-sm text-slate-500">
+
+
+
+              Your latest completed and pending soil
+
+
+
+              tests.
+
+
+
+            </p>
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+
+
+
+
+          {soilRecords.length === 0 ? (
+
+
+
+
+
+
+
+            <EmptyState
+
+
+
+              icon={
+
+
+
+                <FileText className="h-7 w-7 text-green-700" />
+
+
+
+              }
+
+
+
+              title="No soil reports yet"
+
+
+
+              description="Your soil test history will appear here."
+
+
+
+            />
+
+
+
+
+
+
+
+          ) : (
+
+
+
+
+
+
+
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+
+
+
+
+
+
+
+              <div className="overflow-x-auto">
+
+
+
+
+
+
+
+                <table className="min-w-full divide-y divide-slate-200">
+
+
+
+
+
+
+
+                  <thead className="bg-slate-50">
+
+
+
+
+
+
+
+                    <tr>
+
+
+
+
+
+
+
+                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                        Sample
+
+
+
+                      </th>
+
+
+
+
+
+
+
+                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                        Farm
+
+
+
+                      </th>
+
+
+
+
+
+
+
+                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                        Date
+
+
+
+                      </th>
+
+
+
+
+
+
+
+                      <th className="px-5 py-4 text-left text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                        Status
+
+
+
+                      </th>
+
+
+
+
+
+
+
+                      <th className="px-5 py-4 text-right text-xs font-bold uppercase tracking-wide text-slate-500">
+
+
+
+                        Action
+
+
+
+                      </th>
+
+
+
+
+
+
+
+                    </tr>
+
+
+
+
+
+
+
+                  </thead>
+
+
+
+
+
+
+
+
+
+
+
+                  <tbody className="divide-y divide-slate-100">
+
+
+
+
+
+
+
+                    {soilRecords
+
+
+
+                      .slice(0, 5)
+
+
+
+                      .map(
+
+
+
+                        (record) => (
+
+
+
+
+
+
+
+                          <tr
+
+
+
+                            key={
+
+
+
+                              record.test.id
+
+
+
+                            }
+
+
+
+                            className="hover:bg-slate-50"
+
+
+
+                          >
+
+
+
+
+
+
+
+                            <td className="whitespace-nowrap px-5 py-4">
+
+
+
+
+
+
+
+                              <p className="text-sm font-semibold text-slate-900">
+
+
+
+                                {
+
+
+
+                                  record
+
+
+
+                                    .sample
+
+
+
+                                    .sample_id
+
+
+
+                                }
+
+
+
+                              </p>
+
+
+
+
+
+
+
+                            </td>
+
+
+
+
+
+
+
+
+
+
+
+                            <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+
+
+
+                              {
+
+
+
+                                record
+
+
+
+                                  .farm
+
+
+
+                                  .farm_name
+
+
+
+                              }
+
+
+
+                            </td>
+
+
+
+
+
+
+
+
+
+
+
+                            <td className="whitespace-nowrap px-5 py-4 text-sm text-slate-600">
+
+
+
+                              {formatDate(
+
+
+
+                                record
+
+
+
+                                  .test
+
+
+
+                                  .tested_at ??
+
+
+
+                                  record
+
+
+
+                                    .test
+
+
+
+                                    .created_at
+
+
+
+                              )}
+
+
+
+                            </td>
+
+
+
+
+
+
+
+
+
+
+
+                            <td className="whitespace-nowrap px-5 py-4">
+
+
+
+
+
+
+
+                              <span
+
+
+
+                                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold ${getTestStatusClass(
+
+
+
+                                  record.test
+
+
+
+                                    .status
+
+
+
+                                )}`}
+
+
+
+                              >
+
+
+
+
+
+
+
+                                {record.test
+
+
+
+                                  .status ===
+
+
+
+                                  "COMPLETED" && (
+
+
+
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+
+
+
+                                )}
+
+
+
+
+
+
+
+                                {record.test
+
+
+
+                                  .status ===
+
+
+
+                                  "COMPLETED"
+
+
+
+                                  ? "Report Ready"
+
+
+
+                                  : formatLabel(
+
+
+
+                                      record
+
+
+
+                                        .test
+
+
+
+                                        .status
+
+
+
+                                    )}
+
+
+
+
+
+
+
+                              </span>
+
+
+
+
+
+
+
+                            </td>
+
+
+
+
+
+
+
+
+
+
+
+                            <td className="whitespace-nowrap px-5 py-4 text-right">
+
+
+
+                              {record.test
+
+
+
+                                .status ===
+
+
+
+                                "COMPLETED" &&
+
+
+
+                              record.result ? (
+
+
+
+
+
+
+
+                                <div className="flex flex-wrap justify-end gap-2">
+
+
+
+                                  <button
+
+
+
+                                    type="button"
+
+
+
+                                    onClick={() =>
+
+
+
+                                      navigate(
+
+
+
+                                        `/farmer/reports/soil/${record.test.id}`
+
+
+
+                                      )
+
+
+
+                                    }
+
+
+
+                                    className="inline-flex items-center gap-1.5 text-sm font-bold text-green-700 transition hover:text-green-800"
+
+
+
+                                  >
+
+
+
+                                    View Report
+
+
+
+                                    <ArrowRight className="h-4 w-4" />
+
+
+
+                                  </button>
+
+
+
+
+
+
+
+                                  <button
+
+
+
+                                    type="button"
+
+
+
+                                    disabled={
+
+
+
+                                      downloadingPdfId ===
+
+
+
+                                      record.test.id
+
+
+
+                                    }
+
+
+
+                                    onClick={() =>
+
+
+
+                                      void downloadSoilReportPdf(
+
+
+
+                                        record
+
+
+
+                                      )
+
+
+
+                                    }
+
+
+
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+
+
+
+                                  >
+
+
+
+                                    {downloadingPdfId ===
+
+
+
+                                    record.test.id ? (
+
+
+
+                                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+
+
+
+                                    ) : (
+
+
+
+                                      <Download className="h-3.5 w-3.5" />
+
+
+
+                                    )}
+
+
+
+                                    PDF
+
+
+
+                                  </button>
+
+
+
+                                </div>
+
+
+
+
+
+
+
+                              ) : (
+
+
+
+
+
+
+
+                                <span className="text-xs font-medium text-slate-400">
+
+
+
+                                  Awaiting result
+
+
+
+                                </span>
+
+
+
+
+
+
+
+                              )}
+
+
+
+
+
+
+
+                            </td>
+
+
+
+
+
+
+
+                          </tr>
+
+
+
+
+
+
+
+                        )
+
+
+
+                      )}
+
+
+
+
+
+
+
+                  </tbody>
+
+
+
+
+
+
+
+                </table>
+
+
+
+
+
+
+
+              </div>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          )}
+
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ============================================================
+
+
+
+            DECISION SUPPORT NOTICE
+
+
+
+        ============================================================ */}
+
+
+
+
+
+
+
+        <section className="rounded-2xl border border-slate-200 bg-white p-5">
+
+
+
+
+
+
+
+          <div className="flex gap-3">
+
+
+
+
+
+
+
+            <Leaf className="mt-0.5 h-5 w-5 shrink-0 text-green-700" />
+
+
+
+
+
+
+
+            <div>
+
+
+
+
+
+
+
+              <p className="text-sm font-bold text-slate-800">
+
+
+
+                About SoilGenie guidance
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-1 text-xs leading-5 text-slate-500">
+
+
+
+                SoilGenie provides decision-support
+
+
+
+                screening based on available soil
+
+
+
+                measurements. Crop suitability should
+
+
+
+                also be considered alongside verified
+
+
+
+                soil measurements, local field
+
+
+
+                conditions and appropriate agronomic
+
+
+
+                advice.
+
+
+
+              </p>
+
+
+
+
+
+
+
+            </div>
+
+
+
+
+
+
+
+          </div>
+
+
+
+
+
+
+
+        </section>
+
+
+
+
+
+
+
+      </main>
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -3958,19 +7915,39 @@ export default function FarmerDashboard() {
 
 /* ==========================================================================
 
-   SUPPORTING COMPONENTS
 
-   ========================================================================== */
+
+   SUPPORTING COMPONENTS
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 interface ProfileItemProps {
 
-  label: string;
 
-  value: string;
+
+  label: string;
+
+
+
+  value: string;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -3978,39 +7955,79 @@ interface ProfileItemProps {
 
 function ProfileItem({
 
-  label,
 
-  value,
+
+  label,
+
+
+
+  value,
+
+
 
 }: ProfileItemProps) {
 
-  return (
-
-    <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
 
 
-
-      <p className="text-xs font-medium uppercase tracking-wide text-green-100">
-
-        {label}
-
-      </p>
+  return (
 
 
 
-      <p className="mt-2 text-sm font-bold text-white">
-
-        {value}
-
-      </p>
+    <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
 
 
 
-    </div>
 
-  );
+
+
+
+      <p className="text-xs font-medium uppercase tracking-wide text-green-100">
+
+
+
+        {label}
+
+
+
+      </p>
+
+
+
+
+
+
+
+      <p className="mt-2 text-sm font-bold text-white">
+
+
+
+        {value}
+
+
+
+      </p>
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4018,17 +8035,35 @@ function ProfileItem({
 
 interface StatCardProps {
 
-  title: string;
 
-  value: string;
 
-  subtitle: string;
+  title: string;
 
-  icon: ReactNode;
 
-  iconClass: string;
+
+  value: string;
+
+
+
+  subtitle: string;
+
+
+
+  icon: ReactNode;
+
+
+
+  iconClass: string;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4036,83 +8071,167 @@ interface StatCardProps {
 
 function StatCard({
 
-  title,
 
-  value,
 
-  subtitle,
+  title,
 
-  icon,
 
-  iconClass,
+
+  value,
+
+
+
+  subtitle,
+
+
+
+  icon,
+
+
+
+  iconClass,
+
+
 
 }: StatCardProps) {
 
-  return (
-
-    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 
 
-
-      <div className="flex items-start justify-between gap-4">
+  return (
 
 
 
-        <div>
-
-
-
-          <p className="text-sm font-medium text-slate-500">
-
-            {title}
-
-          </p>
-
-
-
-          <p className="mt-2 text-3xl font-bold text-slate-900">
-
-            {value}
-
-          </p>
-
-
-
-          <p className="mt-1 text-xs text-slate-500">
-
-            {subtitle}
-
-          </p>
-
-
-
-        </div>
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 
 
 
 
 
-        <div
 
-          className={`rounded-xl p-3 ${iconClass}`}
 
-        >
-
-          {icon}
-
-        </div>
+      <div className="flex items-start justify-between gap-4">
 
 
 
-      </div>
 
 
 
-    </div>
 
-  );
+        <div>
+
+
+
+
+
+
+
+          <p className="text-sm font-medium text-slate-500">
+
+
+
+            {title}
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <p className="mt-2 text-3xl font-bold text-slate-900">
+
+
+
+            {value}
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <p className="mt-1 text-xs text-slate-500">
+
+
+
+            {subtitle}
+
+
+
+          </p>
+
+
+
+
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+        <div
+
+
+
+          className={`rounded-xl p-3 ${iconClass}`}
+
+
+
+        >
+
+
+
+          {icon}
+
+
+
+        </div>
+
+
+
+
+
+
+
+      </div>
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4120,13 +8239,27 @@ function StatCard({
 
 interface MeasurementProps {
 
-  label: string;
 
-  value: string;
 
-  unit?: string;
+  label: string;
+
+
+
+  value: string;
+
+
+
+  unit?: string;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4134,57 +8267,115 @@ interface MeasurementProps {
 
 function Measurement({
 
-  label,
 
-  value,
 
-  unit,
+  label,
+
+
+
+  value,
+
+
+
+  unit,
+
+
 
 }: MeasurementProps) {
 
-  return (
-
-    <div className="bg-white p-4 text-center">
 
 
-
-      <p className="text-xs font-medium text-slate-500">
-
-        {label}
-
-      </p>
+  return (
 
 
 
-      <p className="mt-2 text-lg font-bold text-slate-900">
-
-        {value}
-
-      </p>
+    <div className="bg-white p-4 text-center">
 
 
 
-      {unit && (
 
 
 
-        <p className="mt-0.5 text-[11px] text-slate-400">
 
-          {unit}
-
-        </p>
+      <p className="text-xs font-medium text-slate-500">
 
 
 
-      )}
+        {label}
 
 
 
-    </div>
+      </p>
 
-  );
+
+
+
+
+
+
+      <p className="mt-2 text-lg font-bold text-slate-900">
+
+
+
+        {value}
+
+
+
+      </p>
+
+
+
+
+
+
+
+      {unit && (
+
+
+
+
+
+
+
+        <p className="mt-0.5 text-[11px] text-slate-400">
+
+
+
+          {unit}
+
+
+
+        </p>
+
+
+
+
+
+
+
+      )}
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4192,11 +8383,23 @@ function Measurement({
 
 interface FarmDetailProps {
 
-  label: string;
 
-  value: string;
+
+  label: string;
+
+
+
+  value: string;
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4204,39 +8407,79 @@ interface FarmDetailProps {
 
 function FarmDetail({
 
-  label,
 
-  value,
+
+  label,
+
+
+
+  value,
+
+
 
 }: FarmDetailProps) {
 
-  return (
-
-    <div className="flex items-center justify-between gap-4 text-sm">
 
 
-
-      <span className="text-slate-500">
-
-        {label}
-
-      </span>
+  return (
 
 
 
-      <strong className="text-right text-slate-800">
-
-        {value}
-
-      </strong>
+    <div className="flex items-center justify-between gap-4 text-sm">
 
 
 
-    </div>
 
-  );
+
+
+
+      <span className="text-slate-500">
+
+
+
+        {label}
+
+
+
+      </span>
+
+
+
+
+
+
+
+      <strong className="text-right text-slate-800">
+
+
+
+        {value}
+
+
+
+      </strong>
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
+
+
+
+
+
+
 
 
 
@@ -4244,11 +8487,19 @@ function FarmDetail({
 
 interface EmptyStateProps {
 
-  icon: ReactNode;
 
-  title: string;
 
-  description: string;
+  icon: ReactNode;
+
+
+
+  title: string;
+
+
+
+  description: string;
+
+
 
 }
 
@@ -4256,48 +8507,98 @@ interface EmptyStateProps {
 
 
 
+
+
+
+
+
+
 function EmptyState({
 
-  icon,
 
-  title,
 
-  description,
+  icon,
+
+
+
+  title,
+
+
+
+  description,
+
+
 
 }: EmptyStateProps) {
 
-  return (
-
-    <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
 
 
-
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100">
-
-        {icon}
-
-      </div>
+  return (
 
 
 
-      <h3 className="mt-5 text-lg font-bold text-slate-900">
-
-        {title}
-
-      </h3>
+    <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
 
 
 
-      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
-
-        {description}
-
-      </p>
 
 
 
-    </div>
 
-  );
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-green-100">
+
+
+
+        {icon}
+
+
+
+      </div>
+
+
+
+
+
+
+
+      <h3 className="mt-5 text-lg font-bold text-slate-900">
+
+
+
+        {title}
+
+
+
+      </h3>
+
+
+
+
+
+
+
+      <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-600">
+
+
+
+        {description}
+
+
+
+      </p>
+
+
+
+
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }

@@ -19,7 +19,6 @@ import {
   Info,
   Loader2,
   RefreshCw,
-  Sprout,
   TestTube2,
   Trash2,
 } from "lucide-react";

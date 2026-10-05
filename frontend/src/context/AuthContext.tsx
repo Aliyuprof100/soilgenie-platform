@@ -3,8 +3,9 @@ import {
   useContext,
   useEffect,
   useState,
-  ReactNode,
 } from "react";
+
+import type { ReactNode } from "react";
 
 import { login as loginService, me } from "../services/auth";
 
@@ -34,7 +35,10 @@ export function AuthProvider({
 
   const [loading, setLoading] = useState(true);
 
-  async function login(email: string, password: string): Promise<User> {
+  async function login(
+    email: string,
+    password: string
+  ): Promise<User> {
     const data = await loginService(email, password);
 
     localStorage.setItem("access", data.access);

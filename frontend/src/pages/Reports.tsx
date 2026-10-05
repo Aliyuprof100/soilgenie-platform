@@ -139,7 +139,7 @@ export default function Reports() {
         !test.result
     ).length;
 
-  const failedTests =
+  
     tests.filter(
       (test) =>
         test.status === "FAILED"

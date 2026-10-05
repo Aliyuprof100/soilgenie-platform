@@ -1,8 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 
+
+
 import { useNavigate, useParams } from "react-router-dom";
 
+
+
 import api from "../api/api";
+
+
+
+
 
 
 
@@ -10,27 +18,53 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 
 
 
+
+
+
+
 import {
 
-  getSoilTest,
 
-  getSoilAnalysisByTest,
 
-  getSoilRecommendation,
+  getSoilTest,
+
+
+
+  getSoilAnalysisByTest,
+
+
+
+  getSoilRecommendation,
+
+
 
 } from "../services/soil";
+
+
+
+
 
 
 
 import type {
 
-  SoilTest,
 
-  SoilAnalysis,
 
-  SoilRecommendation,
+  SoilTest,
 
-  CropRecommendation,
+
+
+  SoilAnalysis,
+
+
+
+  SoilRecommendation,
+
+
+
+  CropRecommendation,
+
+
 
 } from "../services/soil";
 
@@ -38,3508 +72,7016 @@ import type {
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   FARMER SOIL REPORT
 
-   ========================================================================== */
+
+   FARMER SOIL REPORT
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 export default function FarmerSoilReport() {
 
-  const navigate = useNavigate();
 
-  const { id } = useParams();
 
+  const navigate = useNavigate();
 
 
-  const [test, setTest] =
 
-    useState<SoilTest | null>(null);
+  const { id } = useParams();
 
 
 
-  const [analysis, setAnalysis] =
 
-    useState<SoilAnalysis | null>(null);
 
 
 
-  const [recommendation, setRecommendation] =
+  const [test, setTest] =
 
-    useState<SoilRecommendation | null>(null);
 
 
+    useState<SoilTest | null>(null);
 
-  const [loading, setLoading] =
 
-    useState(true);
 
 
 
-  const [error, setError] =
 
-    useState("");
 
+  const [analysis, setAnalysis] =
 
 
-  const [recommendationError, setRecommendationError] =
 
-    useState("");
+    useState<SoilAnalysis | null>(null);
 
-  const [downloadingPdf, setDownloadingPdf] =
-    useState(false);
 
-  const [pdfError, setPdfError] =
-    useState("");
 
 
 
 
 
-  /* ==========================================================================
+  const [recommendation, setRecommendation] =
 
-     LOAD REPORT
 
-     ========================================================================== */
 
+    useState<SoilRecommendation | null>(null);
 
 
-  useEffect(() => {
 
-    async function loadReport() {
 
-      if (!id) {
 
-        setError(
 
-          "No soil report was specified."
 
-        );
+  const [loading, setLoading] =
 
 
 
-        setLoading(false);
+    useState(true);
 
-        return;
 
-      }
 
 
 
-      const numericId =
 
-        Number(id);
 
+  const [error, setError] =
 
 
-      if (
 
-        Number.isNaN(numericId)
+    useState("");
 
-      ) {
 
-        setError(
 
-          "The soil report ID is invalid."
 
-        );
 
 
 
-        setLoading(false);
+  const [recommendationError, setRecommendationError] =
 
-        return;
 
-      }
 
+    useState("");
 
 
-      try {
 
-        setLoading(true);
+  const [downloadingPdf, setDownloadingPdf] =
 
-        setError("");
+    useState(false);
 
-        setRecommendationError("");
 
 
+  const [pdfError, setPdfError] =
 
-        const testData =
+    useState("");
 
-          await getSoilTest(
 
-            numericId
 
-          );
 
 
 
-        setTest(testData);
 
 
 
-        if (testData.result) {
 
-          const [
 
-            analysisResult,
+  /* ==========================================================================
 
-            recommendationResult,
 
-          ] = await Promise.allSettled([
 
-            getSoilAnalysisByTest(
+     LOAD REPORT
 
-              numericId
 
-            ),
 
+     ========================================================================== */
 
 
-            getSoilRecommendation(
 
-              testData.result.id
 
-            ),
 
-          ]);
 
 
+  useEffect(() => {
 
-          if (
 
-            analysisResult.status ===
 
-            "fulfilled"
+    async function loadReport() {
 
-          ) {
 
-            setAnalysis(
 
-              analysisResult.value
+      if (!id) {
 
-            );
 
-          } else {
 
-            console.error(
+        setError(
 
-              "Unable to load soil analysis:",
 
-              analysisResult.reason
 
-            );
+          "No soil report was specified."
 
 
 
-            setAnalysis(null);
+        );
 
-          }
 
 
 
-          if (
 
-            recommendationResult.status ===
 
-            "fulfilled"
 
-          ) {
+        setLoading(false);
 
-            setRecommendation(
 
-              recommendationResult.value
 
-            );
+        return;
 
-          } else {
 
-            console.error(
 
-              "Unable to load crop recommendation:",
+      }
 
-              recommendationResult.reason
 
-            );
 
 
 
-            setRecommendation(null);
 
 
+      const numericId =
 
-            setRecommendationError(
 
-              recommendationResult.reason
 
-                ?.message ||
+        Number(id);
 
-                "Crop recommendations are not available at the moment."
 
-            );
 
-          }
 
-        } else {
 
-          setAnalysis(null);
 
-          setRecommendation(null);
 
-        }
+      if (
 
-      } catch (err: any) {
 
-        console.error(
 
-          "Unable to load farmer soil report:",
+        Number.isNaN(numericId)
 
-          err
 
-        );
 
+      ) {
 
 
-        setError(
 
-          err?.message ||
+        setError(
 
-            "Unable to load the soil report."
 
-        );
 
-      } finally {
+          "The soil report ID is invalid."
 
-        setLoading(false);
 
-      }
 
-    }
+        );
 
 
 
-    loadReport();
 
-  }, [id]);
 
 
 
+        setLoading(false);
 
 
-  /* ==========================================================================
 
-     HELPERS
+        return;
 
-     ========================================================================== */
 
 
+      }
 
-  function formatDate(
 
-    date?: string | null
 
-  ) {
 
-    if (!date) {
 
-      return "—";
 
-    }
 
+      try {
 
 
-    const parsedDate =
 
-      new Date(date);
+        setLoading(true);
 
 
 
-    if (
+        setError("");
 
-      Number.isNaN(
 
-        parsedDate.getTime()
 
-      )
+        setRecommendationError("");
 
-    ) {
 
-      return date;
 
-    }
 
 
 
-    return parsedDate.toLocaleDateString(
 
-      "en-NG",
+        const testData =
 
-      {
 
-        year: "numeric",
 
-        month: "long",
+          await getSoilTest(
 
-        day: "numeric",
 
-      }
 
-    );
+            numericId
 
-  }
 
 
+          );
 
 
 
-  function displayValue(
 
-    value?: number | null
 
-  ) {
 
-    if (
 
-      value === null ||
+        setTest(testData);
 
-      value === undefined
 
-    ) {
 
-      return "—";
 
-    }
 
 
 
-    return value;
+        if (testData.result) {
 
-  }
 
 
+          const [
 
 
 
-  function normalizeStatus(
+            analysisResult,
 
-    status?: string | null
 
-  ) {
 
-    return (
+            recommendationResult,
 
-      status
 
-        ?.trim()
 
-        .toUpperCase() || ""
+          ] = await Promise.allSettled([
 
-    );
 
-  }
 
+            getSoilAnalysisByTest(
 
 
 
+              numericId
 
-  function getStatusClass(
 
-    status?: string | null
 
-  ) {
+            ),
 
-    const normalized =
 
-      normalizeStatus(status);
 
 
 
-    switch (normalized) {
 
-      case "GOOD":
 
-      case "OPTIMAL":
+            getSoilRecommendation(
 
-      case "ADEQUATE":
 
-      case "VALID":
 
-      case "AVAILABLE":
+              testData.result.id
 
-      case "HIGHLY_SUITABLE":
 
-      case "SUITABLE":
 
-        return {
+            ),
 
-          badge:
 
-            "bg-green-100 text-green-800 border-green-200",
 
+          ]);
 
 
-          card:
 
-            "border-green-200 bg-green-50",
 
 
 
-          icon:
 
-            "bg-green-600 text-white",
+          if (
 
 
 
-          text:
+            analysisResult.status ===
 
-            "text-green-900",
 
-        };
 
+            "fulfilled"
 
 
-      case "MODERATE":
 
-      case "CONDITIONAL":
+          ) {
 
-      case "WARNING":
 
-        return {
 
-          badge:
+            setAnalysis(
 
-            "bg-yellow-100 text-yellow-800 border-yellow-200",
 
 
+              analysisResult.value
 
-          card:
 
-            "border-yellow-200 bg-yellow-50",
 
+            );
 
 
-          icon:
 
-            "bg-yellow-500 text-white",
+          } else {
 
 
 
-          text:
+            console.error(
 
-            "text-yellow-900",
 
-        };
 
+              "Unable to load soil analysis:",
 
 
-      case "POOR":
 
-      case "LOW":
+              analysisResult.reason
 
-      case "MARGINAL":
 
-        return {
 
-          badge:
+            );
 
-            "bg-orange-100 text-orange-800 border-orange-200",
 
 
 
-          card:
 
-            "border-orange-200 bg-orange-50",
 
 
+            setAnalysis(null);
 
-          icon:
 
-            "bg-orange-500 text-white",
 
+          }
 
 
-          text:
 
-            "text-orange-900",
 
-        };
 
 
 
-      case "CRITICAL":
+          if (
 
-      case "CRITICAL_CONSTRAINT":
 
-      case "UNSUITABLE":
 
-      case "BLOCKED":
+            recommendationResult.status ===
 
-        return {
 
-          badge:
 
-            "bg-red-100 text-red-800 border-red-200",
+            "fulfilled"
 
 
 
-          card:
+          ) {
 
-            "border-red-200 bg-red-50",
 
 
+            setRecommendation(
 
-          icon:
 
-            "bg-red-600 text-white",
 
+              recommendationResult.value
 
 
-          text:
 
-            "text-red-900",
+            );
 
-        };
 
 
+          } else {
 
-      default:
 
-        return {
 
-          badge:
+            console.error(
 
-            "bg-slate-100 text-slate-700 border-slate-200",
 
 
+              "Unable to load crop recommendation:",
 
-          card:
 
-            "border-slate-200 bg-slate-50",
 
+              recommendationResult.reason
 
 
-          icon:
 
-            "bg-slate-500 text-white",
+            );
 
 
 
-          text:
 
-            "text-slate-900",
 
-        };
 
-    }
 
-  }
+            setRecommendation(null);
 
 
 
 
 
-  function getStatusLabel(
 
-    status?: string | null
 
-  ) {
+            setRecommendationError(
 
-    const normalized =
 
-      normalizeStatus(status);
 
+              recommendationResult.reason
 
 
-    switch (normalized) {
 
-      case "GOOD":
+                ?.message ||
 
-        return "Good";
 
 
+                "Crop recommendations are not available at the moment."
 
-      case "OPTIMAL":
 
-        return "Optimal";
 
+            );
 
 
-      case "ADEQUATE":
 
-        return "Adequate";
+          }
 
 
 
-      case "VALID":
+        } else {
 
-        return "Valid";
 
 
+          setAnalysis(null);
 
-      case "MODERATE":
 
-        return "Needs Attention";
 
+          setRecommendation(null);
 
 
-      case "LOW":
 
-        return "Low";
+        }
 
 
 
-      case "POOR":
+      } catch (err: any) {
 
-        return "Poor";
 
 
+        console.error(
 
-      case "CRITICAL":
 
-        return "Critical";
 
+          "Unable to load farmer soil report:",
 
 
-      case "HIGHLY_SUITABLE":
 
-        return "Highly Suitable";
+          err
 
 
 
-      case "SUITABLE":
+        );
 
-        return "Suitable";
 
 
 
-      case "CONDITIONAL":
 
-        return "Conditional";
 
 
+        setError(
 
-      case "MARGINAL":
 
-        return "Marginal";
 
+          err?.message ||
 
 
-      case "UNSUITABLE":
 
-        return "Not Suitable";
+            "Unable to load the soil report."
 
 
 
-      default:
+        );
 
-        if (!status) {
 
-          return "Not Available";
 
-        }
+      } finally {
 
 
 
-        return status
+        setLoading(false);
 
-          .replace(/\_/g, " ")
 
-          .toLowerCase()
 
-          .replace(
+      }
 
-            /\b\w/g,
 
-            (letter) =>
 
-              letter.toUpperCase()
+    }
 
-          );
 
-    }
 
-  }
 
 
 
 
+    loadReport();
 
-  function getStatusIcon(
 
-    status?: string | null
 
-  ) {
+  }, [id]);
 
-    const normalized =
 
-      normalizeStatus(status);
 
 
 
-    switch (normalized) {
 
-      case "GOOD":
 
-      case "OPTIMAL":
 
-      case "ADEQUATE":
 
-      case "VALID":
 
-      case "HIGHLY_SUITABLE":
 
-      case "SUITABLE":
+  /* ==========================================================================
 
-        return "✓";
 
 
+     HELPERS
 
-      case "MODERATE":
 
-      case "CONDITIONAL":
 
-        return "⚠";
+     ========================================================================== */
 
 
 
-      case "POOR":
 
-      case "LOW":
 
-      case "MARGINAL":
 
-        return "!";
 
+  function formatDate(
 
 
-      case "CRITICAL":
 
-      case "CRITICAL_CONSTRAINT":
+    date?: string | null
 
-      case "UNSUITABLE":
 
-        return "⚠";
 
+  ) {
 
 
-      default:
 
-        return "?";
+    if (!date) {
 
-    }
 
-  }
 
+      return "—";
 
 
 
+    }
 
-  function getParameterMessage(
 
-    parameter: string,
 
-    status?: string | null
 
-  ) {
 
-    const normalized =
 
-      normalizeStatus(status);
 
+    const parsedDate =
 
 
-    if (
 
-      normalized === "GOOD" ||
+      new Date(date);
 
-      normalized === "OPTIMAL"
 
-    ) {
 
-      return `${parameter} is in a good screening range.`;
 
-    }
 
 
 
-    if (
+    if (
 
-      normalized === "ADEQUATE"
 
-    ) {
 
-      return `${parameter} is currently at an adequate screening level.`;
+      Number.isNaN(
 
-    }
 
 
+        parsedDate.getTime()
 
-    if (
 
-      normalized === "MODERATE"
 
-    ) {
+      )
 
-      return `${parameter} may need some attention.`;
 
-    }
 
+    ) {
 
 
-    if (
 
-      normalized === "LOW" ||
+      return date;
 
-      normalized === "POOR"
 
-    ) {
 
-      return `${parameter} appears low and may need attention for the intended crop.`;
+    }
 
-    }
 
 
 
-    if (
 
-      normalized === "HIGH"
 
-    ) {
 
-      return `${parameter} appears high and should be considered when planning crop management.`;
+    return parsedDate.toLocaleDateString(
 
-    }
 
 
+      "en-NG",
 
-    if (
 
-      normalized === "ACIDIC"
 
-    ) {
+      {
 
-      return `${parameter} indicates acidic soil conditions.`;
 
-    }
 
+        year: "numeric",
 
 
-    if (
 
-      normalized === "ALKALINE"
+        month: "long",
 
-    ) {
 
-      return `${parameter} indicates alkaline soil conditions.`;
 
-    }
+        day: "numeric",
 
 
 
-    if (
+      }
 
-      normalized === "CRITICAL"
 
-    ) {
 
-      return `${parameter} requires verification or attention before making important farming decisions.`;
+    );
 
-    }
 
 
+  }
 
-    return `${parameter} has not been fully interpreted for this report.`;
 
-  }
 
 
 
 
 
-  function getStatusWidth(
 
-    status?: string | null
 
-  ) {
 
-    const normalized =
 
-      normalizeStatus(status);
+  function displayValue(
 
 
 
-    switch (normalized) {
+    value?: number | null
 
-      case "GOOD":
 
-      case "OPTIMAL":
 
-      case "ADEQUATE":
+  ) {
 
-        return "w-full";
 
 
+    if (
 
-      case "MODERATE":
 
-        return "w-2/3";
 
+      value === null ||
 
 
-      case "LOW":
 
-      case "POOR":
+      value === undefined
 
-        return "w-1/3";
 
 
+    ) {
 
-      case "CRITICAL":
 
-        return "w-1/4";
 
+      return "—";
 
 
-      default:
 
-        return "w-1/2";
+    }
 
-    }
 
-  }
 
 
 
 
 
-  function getCropDecisionLabel(
+    return value;
 
-    crop: CropRecommendation
 
-  ) {
 
-    if (
+  }
 
-      crop.automatic_recommendation
 
-    ) {
 
-      return "Recommended";
 
-    }
 
 
 
-    switch (
 
-      crop.decision
 
-    ) {
 
-      case "CONDITIONAL":
 
-        return "Conditional";
+  function normalizeStatus(
 
 
 
-      case "HOLD":
+    status?: string | null
 
-        return "Review First";
 
 
+  ) {
 
-      case "VERIFY_MEASUREMENTS":
 
-        return "Verify Soil Test";
 
+    return (
 
 
-      case "DO_NOT_RECOMMEND":
 
-        return "Not Recommended";
+      status
 
 
 
-      default:
+        ?.trim()
 
-        return crop.decision
 
-          .replace(/\_/g, " ")
 
-          .toLowerCase()
+        .toUpperCase() || ""
 
-          .replace(
 
-            /\b\w/g,
 
-            (letter) =>
+    );
 
-              letter.toUpperCase()
 
-          );
 
-    }
+  }
 
-  }
 
 
 
 
 
-  /* ==========================================================================
-     DOWNLOAD PDF
-     ========================================================================== */
 
-  async function handleDownloadPdf() {
-    if (!id || !test) {
-      setPdfError("The soil report is not available for download.");
-      return;
-    }
 
-    try {
-      setDownloadingPdf(true);
-      setPdfError("");
 
-      const response = await api.get(
-        `/reports/soil/${id}/pdf/`,
-        { responseType: "blob" }
-      );
 
-      const contentType =
-        response.headers["content-type"] || "application/pdf";
 
-      const blob = new Blob([response.data], { type: contentType });
-      const downloadUrl = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
+  function getStatusClass(
 
-      const safeSampleId = (test.sample_id || "soil-report")
-        .replace(/[^a-zA-Z0-9-_]/g, "-");
 
-      link.href = downloadUrl;
-      link.download = `SoilGenie-Soil-Report-${safeSampleId}.pdf`;
 
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(downloadUrl);
-    } catch (err: any) {
-      console.error("Unable to download soil report PDF:", err);
+    status?: string | null
 
-      let message =
-        "Unable to download the PDF report. Please try again.";
 
-      if (err?.response?.status === 401) {
-        message =
-          "Your session has expired. Please sign in again and retry the download.";
-      } else if (err?.response?.status === 404) {
-        message =
-          "The PDF report could not be found for this soil test.";
-      }
 
-      setPdfError(message);
-    } finally {
-      setDownloadingPdf(false);
-    }
-  }
+  ) {
 
 
-  /* ==========================================================================
-     DERIVED DATA
-     ========================================================================== */
 
+    const normalized =
 
 
-  const overallStatus =
 
-    analysis?.overall_status;
+      normalizeStatus(status);
 
 
 
-  const overallStyle =
 
-    getStatusClass(
 
-      overallStatus
 
-    );
 
+    switch (normalized) {
 
 
 
+      case "GOOD":
 
-  const parameters = [
 
-    {
 
-      name: "Soil pH",
+      case "OPTIMAL":
 
-      value:
 
-        test?.result?.ph,
 
-      unit: "",
+      case "ADEQUATE":
 
-      status:
 
-        analysis?.ph_status,
 
-      icon: "🌱",
+      case "VALID":
 
-    },
 
 
+      case "AVAILABLE":
 
-    {
 
-      name: "Nitrogen",
 
-      value:
+      case "HIGHLY_SUITABLE":
 
-        test?.result
 
-          ?.nitrogen_mg_kg,
 
-      unit: "mg/kg",
+      case "SUITABLE":
 
-      status:
 
-        analysis?.nitrogen_status,
 
-      icon: "🌿",
+        return {
 
-    },
 
 
+          badge:
 
-    {
 
-      name: "Phosphorus",
 
-      value:
+            "bg-green-100 text-green-800 border-green-200",
 
-        test?.result
 
-          ?.phosphorus_mg_kg,
 
-      unit: "mg/kg",
 
-      status:
 
-        analysis?.phosphorus_status,
 
-      icon: "🌾",
 
-    },
+          card:
 
 
 
-    {
+            "border-green-200 bg-green-50",
 
-      name: "Potassium",
 
-      value:
 
-        test?.result
 
-          ?.potassium_mg_kg,
 
-      unit: "mg/kg",
 
-      status:
 
-        analysis?.potassium_status,
+          icon:
 
-      icon: "🌻",
 
-    },
 
+            "bg-green-600 text-white",
 
 
-    {
 
-      name: "Moisture",
 
-      value:
 
-        test?.result
 
-          ?.moisture_percent,
 
-      unit: "%",
+          text:
 
-      status:
 
-        analysis?.moisture_status,
 
-      icon: "💧",
+            "text-green-900",
 
-    },
 
 
+        };
 
-    {
 
-      name: "Organic Matter",
 
-      value:
 
-        test?.result
 
-          ?.organic_matter_percent,
 
-      unit: "%",
 
-      status:
+      case "MODERATE":
 
-        analysis
 
-          ?.organic_matter_status,
 
-      icon: "🌍",
+      case "CONDITIONAL":
 
-    },
 
-  ];
 
+      case "WARNING":
 
 
 
+        return {
 
-  const cropRecommendations =
 
-    useMemo(() => {
 
-      if (!recommendation) {
+          badge:
 
-        return [];
 
-      }
 
+            "bg-yellow-100 text-yellow-800 border-yellow-200",
 
 
-      return [
 
-        ...recommendation
 
-          .crop_recommendations
 
-          .recommended,
 
 
+          card:
 
-        ...recommendation
 
-          .crop_recommendations
 
-          .conditional,
+            "border-yellow-200 bg-yellow-50",
 
 
 
-        ...recommendation
 
-          .crop_recommendations
 
-          .hold,
 
 
+          icon:
 
-        ...recommendation
 
-          .crop_recommendations
 
-          .avoid,
+            "bg-yellow-500 text-white",
 
-      ];
 
-    }, [recommendation]);
 
 
 
 
 
-  const sortedCrops =
+          text:
 
-    useMemo(() => {
 
-      return [
 
-        ...cropRecommendations,
+            "text-yellow-900",
 
-      ].sort(
 
-        (a, b) =>
 
-          b.score - a.score
+        };
 
-      );
 
-    }, [cropRecommendations]);
 
 
 
 
 
-  const bestCrop =
+      case "POOR":
 
-    recommendation?.best_crop ||
 
-    null;
 
+      case "LOW":
 
 
 
+      case "MARGINAL":
 
-  const provisionalBestCrop =
 
-    recommendation
 
-      ?.provisional_best_crop ||
+        return {
 
-    null;
 
 
+          badge:
 
 
 
-  const bestCropDetails =
+            "bg-orange-100 text-orange-800 border-orange-200",
 
-    sortedCrops.find(
 
-      (crop) =>
 
-        crop.crop === bestCrop
 
-    ) ||
 
-    sortedCrops.find(
 
-      (crop) =>
 
-        crop.crop ===
+          card:
 
-        provisionalBestCrop
 
-    ) ||
 
-    null;
+            "border-orange-200 bg-orange-50",
 
 
 
 
 
-  const otherCrops =
 
-    bestCropDetails
 
-      ? sortedCrops.filter(
+          icon:
 
-          (crop) =>
 
-            crop.crop !==
 
-            bestCropDetails.crop
+            "bg-orange-500 text-white",
 
-        )
 
-      : sortedCrops;
 
 
 
 
 
-  /* ==========================================================================
+          text:
 
-     LOADING
 
-     ========================================================================== */
 
+            "text-orange-900",
 
 
-  if (loading) {
 
-    return (
+        };
 
-      <DashboardLayout>
 
-        <div className="mx-auto max-w-4xl">
 
-          <div className="rounded-3xl border bg-white p-10 text-center shadow-sm">
 
-            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-green-700" />
 
 
 
-            <p className="mt-4 text-sm text-slate-500">
+      case "CRITICAL":
 
-              Preparing your soil
 
-              report...
 
-            </p>
+      case "CRITICAL_CONSTRAINT":
 
-          </div>
 
-        </div>
 
-      </DashboardLayout>
+      case "UNSUITABLE":
 
-    );
 
-  }
 
+      case "BLOCKED":
 
 
 
+        return {
 
-  /* ==========================================================================
 
-     ERROR
 
-     ========================================================================== */
+          badge:
 
 
 
-  if (
+            "bg-red-100 text-red-800 border-red-200",
 
-    error ||
 
-    !test
 
-  ) {
 
-    return (
 
-      <DashboardLayout>
 
-        <div className="mx-auto max-w-4xl">
 
-          <button
+          card:
 
-            type="button"
 
-            onClick={() =>
 
-              navigate(
+            "border-red-200 bg-red-50",
 
-                "/agent/soil/samples"
 
-              )
 
-            }
 
-            className="mb-6 text-sm font-semibold text-green-700 hover:text-green-800"
 
-          >
 
-            ← Back
 
-          </button>
+          icon:
 
 
 
-          <div className="rounded-3xl border border-red-200 bg-red-50 p-8">
+            "bg-red-600 text-white",
 
-            <div className="flex items-start gap-4">
 
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 text-xl text-red-700">
 
-                !
 
-              </div>
 
 
 
-              <div>
+          text:
 
-                <h1 className="text-xl font-bold text-red-900">
 
-                  Unable to load soil
 
-                  report
+            "text-red-900",
 
-                </h1>
 
 
+        };
 
-                <p className="mt-2 text-sm leading-6 text-red-700">
 
-                  {error ||
 
-                    "The requested soil report could not be found."}
 
-                </p>
 
-              </div>
 
-            </div>
 
-          </div>
+      default:
 
-        </div>
 
-      </DashboardLayout>
 
-    );
+        return {
 
-  }
 
 
+          badge:
 
 
 
-  /* ==========================================================================
+            "bg-slate-100 text-slate-700 border-slate-200",
 
-     PAGE
 
-     ========================================================================== */
 
 
 
-  return (
 
-    <DashboardLayout>
 
-      <div className="mx-auto max-w-4xl space-y-6 pb-12">
+          card:
 
 
 
-        {/* ================================================================
+            "border-slate-200 bg-slate-50",
 
-            TOP NAVIGATION
 
-           ================================================================ */}
 
 
 
-        <div className="flex items-center justify-between">
 
-          <button
 
-            type="button"
+          icon:
 
-            onClick={() =>
 
-              navigate(
 
-                `/agent/soil/samples/${test.sample}`
+            "bg-slate-500 text-white",
 
-              )
 
-            }
 
-            className="text-sm font-semibold text-green-700 hover:text-green-800"
 
-          >
 
-            ← Back
 
-          </button>
 
+          text:
 
 
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
 
-            SoilGenie Report
+            "text-slate-900",
 
-          </span>
 
-        </div>
 
+        };
 
 
 
+    }
 
-        {/* ================================================================
 
-            REPORT HEADER
 
-           ================================================================ */}
+  }
 
 
 
-        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 to-green-600 p-6 text-white shadow-lg sm:p-8">
 
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
 
-            <div>
 
-              <div className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
 
-                Farmer Soil Report
 
-              </div>
 
 
 
-              <h1 className="text-3xl font-bold sm:text-4xl">
+  function getStatusLabel(
 
-                Your Soil Health
 
-                Report
 
-              </h1>
+    status?: string | null
 
 
 
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-green-50 sm:text-base">
+  ) {
 
-                Understand your soil,
 
-                discover suitable crops
 
-                and see the most
+    const normalized =
 
-                important actions to
 
-                consider next.
 
-              </p>
+      normalizeStatus(status);
 
-            </div>
 
 
 
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-white/15 text-4xl">
 
-              🌱
 
-            </div>
 
-          </div>
+    switch (normalized) {
 
 
 
-          <div className="mt-8 grid gap-3 text-sm sm:grid-cols-3">
+      case "GOOD":
 
-            <div className="rounded-2xl bg-white/10 p-4">
 
-              <p className="text-xs text-green-100">
 
-                Farm
+        return "Good";
 
-              </p>
 
 
 
-              <p className="mt-1 font-bold">
 
-                {test.farm_name}
 
-              </p>
 
-            </div>
+      case "OPTIMAL":
 
 
 
-            <div className="rounded-2xl bg-white/10 p-4">
+        return "Optimal";
 
-              <p className="text-xs text-green-100">
 
-                Sample
 
-              </p>
 
 
 
-              <p className="mt-1 break-all font-bold">
 
-                {test.sample_id}
+      case "ADEQUATE":
 
-              </p>
 
-            </div>
 
+        return "Adequate";
 
 
-            <div className="rounded-2xl bg-white/10 p-4">
 
-              <p className="text-xs text-green-100">
 
-                Report Date
 
-              </p>
 
 
+      case "VALID":
 
-              <p className="mt-1 font-bold">
 
-                {formatDate(
 
-                  test.tested_at ||
+        return "Valid";
 
-                    test.created_at
 
-                )}
 
-              </p>
 
-            </div>
 
-          </div>
 
-        </section>
 
+      case "MODERATE":
 
 
 
+        return "Needs Attention";
 
-        {/* ================================================================
 
-            OVERALL SOIL CONDITION
 
-           ================================================================ */}
 
 
 
-        {analysis ? (
 
-          <section
+      case "LOW":
 
-            className={`rounded-3xl border p-6 shadow-sm sm:p-8 ${overallStyle.card}`}
 
-          >
 
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+        return "Low";
 
-              <div
 
-                className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-3xl shadow-sm ${overallStyle.icon}`}
 
-              >
 
-                {getStatusIcon(
 
-                  overallStatus
 
-                )}
 
-              </div>
+      case "POOR":
 
 
 
-              <div className="flex-1">
+        return "Poor";
 
-                <p className="text-sm font-semibold uppercase tracking-wider opacity-70">
 
-                  Your Soil Condition
 
-                </p>
 
 
 
-                <div className="mt-1 flex flex-wrap items-center gap-3">
 
-                  <h2
+      case "CRITICAL":
 
-                    className={`text-3xl font-bold ${overallStyle.text}`}
 
-                  >
 
-                    {getStatusLabel(
+        return "Critical";
 
-                      overallStatus
 
-                    )}
 
-                  </h2>
 
 
 
-                  <span
 
-                    className={`rounded-full border px-3 py-1 text-xs font-bold ${overallStyle.badge}`}
+      case "HIGHLY_SUITABLE":
 
-                  >
 
-                    {overallStatus}
 
-                  </span>
+        return "Highly Suitable";
 
-                </div>
 
 
 
-                {recommendation
 
-                  ?.farmer_summary ? (
 
-                  <p className="mt-3 text-sm leading-7 opacity-90">
 
-                    {
+      case "SUITABLE":
 
-                      recommendation.farmer_summary
 
-                    }
 
-                  </p>
+        return "Suitable";
 
-                ) : analysis.summary ? (
 
-                  <p className="mt-3 text-sm leading-7 opacity-90">
 
-                    {
 
-                      analysis.summary
 
-                    }
 
-                  </p>
 
-                ) : null}
+      case "CONDITIONAL":
 
-              </div>
 
-            </div>
 
-          </section>
+        return "Conditional";
 
-        ) : (
 
-          <section className="rounded-3xl border border-yellow-200 bg-yellow-50 p-6">
 
-            <div className="flex gap-4">
 
-              <div className="text-2xl">
 
-                🧠
 
-              </div>
 
+      case "MARGINAL":
 
 
-              <div>
 
-                <h2 className="font-bold text-yellow-900">
+        return "Marginal";
 
-                  SoilGenie analysis
 
-                  is not ready yet
 
-                </h2>
 
 
 
-                <p className="mt-2 text-sm leading-6 text-yellow-800">
 
-                  Your soil measurements
+      case "UNSUITABLE":
 
-                  have been recorded.
 
-                  SoilGenie will display
 
-                  your guidance once the
+        return "Not Suitable";
 
-                  analysis is available.
 
-                </p>
 
-              </div>
 
-            </div>
 
-          </section>
 
-        )}
 
+      default:
 
 
 
+        if (!status) {
 
-        {/* ================================================================
 
-            BEST CROP MATCH
 
-           ================================================================ */}
+          return "Not Available";
 
 
 
-        {recommendation && (
+        }
 
-          <section className="overflow-hidden rounded-3xl border border-green-200 bg-white shadow-sm">
 
-            <div className="border-b border-green-100 bg-green-50 p-6 sm:p-8">
 
-              <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
 
-                Crop Match
 
-              </p>
 
 
+        return status
 
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">
 
-                Crops That Match Your
 
-                Soil
+          .replace(/_/g, " ")
 
-              </h2>
 
 
+          .toLowerCase()
 
-              <p className="mt-2 text-sm leading-6 text-slate-600">
 
-                SoilGenie compared the
 
-                available soil
+          .replace(
 
-                measurements with the
 
-                crops currently included
 
-                in its screening model.
+            /\b\w/g,
 
-              </p>
 
-            </div>
 
+            (letter) =>
 
 
-            <div className="p-6 sm:p-8">
 
+              letter.toUpperCase()
 
 
-              {/* Safe recommendation */}
 
+          );
 
 
-              {bestCrop &&
 
-              bestCropDetails ? (
+    }
 
-                <div className="rounded-3xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-6">
 
-                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
 
-                    <div className="flex items-center gap-4">
+  }
 
-                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-700 text-3xl text-white shadow-sm">
 
-                        🌾
 
-                      </div>
 
 
 
-                      <div>
 
-                        <p className="text-xs font-bold uppercase tracking-wider text-green-700">
 
-                          Best Crop Match
 
-                        </p>
 
 
+  function getStatusIcon(
 
-                        <h3 className="mt-1 text-3xl font-bold text-green-950">
 
-                          {
 
-                            bestCropDetails.crop
+    status?: string | null
 
-                          }
 
-                        </h3>
 
+  ) {
 
 
-                        <p className="mt-1 text-sm font-medium text-green-800">
 
-                          {getStatusLabel(
+    const normalized =
 
-                            bestCropDetails.suitability
 
-                          )}
 
-                        </p>
+      normalizeStatus(status);
 
-                      </div>
 
-                    </div>
 
 
 
-                    <div className="rounded-2xl bg-white px-6 py-4 text-center shadow-sm">
 
-                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
 
-                        Suitability Score
+    switch (normalized) {
 
-                      </p>
 
 
+      case "GOOD":
 
-                      <p className="mt-1 text-3xl font-bold text-green-800">
 
-                        {
 
-                          bestCropDetails.score
+      case "OPTIMAL":
 
-                        }
 
-                        <span className="text-sm font-medium text-slate-400">
 
-                          /100
+      case "ADEQUATE":
 
-                        </span>
 
-                      </p>
 
-                    </div>
+      case "VALID":
 
-                  </div>
 
 
+      case "HIGHLY_SUITABLE":
 
-                  <div className="mt-5 rounded-2xl bg-white/70 p-5">
 
-                    <p className="text-sm leading-7 text-green-900">
 
-                      Based on the
+      case "SUITABLE":
 
-                      available soil
 
-                      measurements,{" "}
 
-                      <strong>
+        return "✓";
 
-                        {
 
-                          bestCropDetails.crop
 
-                        }
 
-                      </strong>{" "}
 
-                      currently has the
 
-                      strongest safe
 
-                      recommendation
+      case "MODERATE":
 
-                      among the crops
 
-                      assessed by
 
-                      SoilGenie.
+      case "CONDITIONAL":
 
-                    </p>
 
-                  </div>
 
-                </div>
+        return "⚠";
 
-              ) : provisionalBestCrop &&
 
-                bestCropDetails ? (
 
-                <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
 
-                  <div className="flex items-start gap-4">
 
-                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white">
 
-                      🌾
 
-                    </div>
+      case "POOR":
 
 
 
-                    <div>
+      case "LOW":
 
-                      <p className="text-xs font-bold uppercase tracking-wider text-blue-700">
 
-                        Provisional Best
 
-                        Match
+      case "MARGINAL":
 
-                      </p>
 
 
+        return "!";
 
-                      <h3 className="mt-1 text-2xl font-bold text-blue-950">
 
-                        {
 
-                          provisionalBestCrop
 
-                        }
 
-                      </h3>
 
 
+      case "CRITICAL":
 
-                      <p className="mt-3 text-sm leading-7 text-blue-900">
 
-                        This crop has the
 
-                        strongest
+      case "CRITICAL_CONSTRAINT":
 
-                        provisional match,
 
-                        but SoilGenie is
 
-                        not presenting it
+      case "UNSUITABLE":
 
-                        as an automatic
 
-                        planting
 
-                        recommendation.
+        return "⚠";
 
-                        Review the soil
 
-                        test issues below
 
-                        first.
 
-                      </p>
 
-                    </div>
 
-                  </div>
 
-                </div>
+      default:
 
-              ) : (
 
-                <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-6">
 
-                  <h3 className="font-bold text-yellow-950">
+        return "?";
 
-                    No crop is currently
 
-                    being automatically
 
-                    recommended
+    }
 
-                  </h3>
 
 
+  }
 
-                  <p className="mt-2 text-sm leading-6 text-yellow-800">
 
-                    Review the soil
 
-                    measurements and
 
-                    recommended next
 
-                    steps before making
 
-                    a planting decision.
 
-                  </p>
 
-                </div>
 
-              )}
 
 
+  function getParameterMessage(
 
 
 
-              {/* Other crop matches */}
+    parameter: string,
 
 
 
-              {otherCrops.length > 0 && (
+    status?: string | null
 
-                <div className="mt-8">
 
-                  <h3 className="text-lg font-bold text-slate-900">
 
-                    Other Crop Matches
+  ) {
 
-                  </h3>
 
 
+    const normalized =
 
-                  <p className="mt-1 text-sm text-slate-500">
 
-                    Other crops assessed
 
-                    against the same soil
+      normalizeStatus(status);
 
-                    measurements.
 
-                  </p>
 
 
 
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
 
-                    {otherCrops.map(
 
-                      (
+    if (
 
-                        crop,
 
-                        index
 
-                      ) => (
+      normalized === "GOOD" ||
 
-                        <FarmerCropCard
 
-                          key={`${crop.crop}-${index}`}
 
-                          crop={crop}
+      normalized === "OPTIMAL"
 
-                          statusLabel={getStatusLabel(
 
-                            crop.suitability
 
-                          )}
+    ) {
 
-                          decisionLabel={getCropDecisionLabel(
 
-                            crop
 
-                          )}
+      return `${parameter} is in a good screening range.`;
 
-                        />
 
-                      )
 
-                    )}
+    }
 
-                  </div>
 
-                </div>
 
-              )}
 
 
 
 
+    if (
 
-              {/* Safety notice */}
 
 
+      normalized === "ADEQUATE"
 
-              <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
 
-                <div className="flex gap-3">
 
-                  <div className="text-lg">
+    ) {
 
-                    ℹ️
 
-                  </div>
 
+      return `${parameter} is currently at an adequate screening level.`;
 
 
-                  <p className="text-xs leading-6 text-slate-500">
 
-                    Crop matches are
+    }
 
-                    preliminary
 
-                    decision-support
 
-                    results based on the
 
-                    available soil
 
-                    measurements and
 
-                    configured crop
 
-                    profiles. Consider
+    if (
 
-                    local weather,
 
-                    planting season,
 
-                    variety, field
+      normalized === "MODERATE"
 
-                    conditions and
 
-                    locally appropriate
 
-                    agronomic advice
+    ) {
 
-                    before planting.
 
-                  </p>
 
-                </div>
+      return `${parameter} may need some attention.`;
 
-              </div>
 
-            </div>
 
-          </section>
+    }
 
-        )}
 
 
 
 
 
-        {/* ================================================================
 
-            WHAT IS GOOD / WHAT NEEDS ATTENTION
+    if (
 
-           ================================================================ */}
 
 
+      normalized === "LOW" ||
 
-        {recommendation && (
 
-          <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
 
-            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+      normalized === "POOR"
 
-              Your Soil at a Glance
 
-            </p>
 
+    ) {
 
 
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
 
-              What Is Good & What
+      return `${parameter} appears low and may need attention for the intended crop.`;
 
-              Needs Attention
 
-            </h2>
 
+    }
 
 
-            <div className="mt-6 grid gap-5 md:grid-cols-2">
 
-              <FarmerListCard
 
-                icon="✓"
 
-                title="What Is Good"
 
-                items={
 
-                  recommendation
+    if (
 
-                    .soil_conditions
 
-                    .strengths
 
-                }
+      normalized === "HIGH"
 
-                emptyText="No specific soil strengths were identified from the current measurements."
 
-                className="border-green-200 bg-green-50"
 
-                iconClassName="bg-green-600 text-white"
+    ) {
 
-                titleClassName="text-green-950"
 
-              />
 
+      return `${parameter} appears high and should be considered when planning crop management.`;
 
 
-              <FarmerListCard
 
-                icon="!"
+    }
 
-                title="What Needs Attention"
 
-                items={[
 
-                  ...recommendation
 
-                    .soil_conditions
 
-                    .limitations,
 
 
+    if (
 
-                  ...recommendation
 
-                    .soil_conditions
 
-                    .risks,
+      normalized === "ACIDIC"
 
-                ]}
 
-                emptyText="No major soil limitations or risks were identified from the current measurements."
 
-                className="border-orange-200 bg-orange-50"
+    ) {
 
-                iconClassName="bg-orange-500 text-white"
 
-                titleClassName="text-orange-950"
 
-              />
+      return `${parameter} indicates acidic soil conditions.`;
 
-            </div>
 
-          </section>
 
-        )}
+    }
 
 
 
 
 
-        {/* ================================================================
 
-            NEXT STEPS
 
-           ================================================================ */}
+    if (
 
 
 
-        {recommendation &&
+      normalized === "ALKALINE"
 
-          recommendation
 
-            .soil_conditions
 
-            .actions.length > 0 && (
+    ) {
 
-            <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6 shadow-sm sm:p-8">
 
-              <div className="flex items-start gap-4">
 
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white">
+      return `${parameter} indicates alkaline soil conditions.`;
 
-                  →
 
-                </div>
 
+    }
 
 
-                <div className="flex-1">
 
-                  <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
 
-                    Action Plan
 
-                  </p>
 
 
+    if (
 
-                  <h2 className="mt-1 text-2xl font-bold text-blue-950">
 
-                    What You Should Do
 
-                    Next
+      normalized === "CRITICAL"
 
-                  </h2>
 
 
+    ) {
 
-                  <p className="mt-2 text-sm leading-6 text-blue-800">
 
-                    Based on this soil
 
-                    screening, these are
+      return `${parameter} requires verification or attention before making important farming decisions.`;
 
-                    the main actions to
 
-                    consider.
 
-                  </p>
+    }
 
 
 
-                  <div className="mt-6 space-y-3">
 
-                    {recommendation
 
-                      .soil_conditions
 
-                      .actions.map(
 
-                        (
+    return `${parameter} has not been fully interpreted for this report.`;
 
-                          action,
 
-                          index
 
-                        ) => (
+  }
 
-                          <div
 
-                            key={`${action}-${index}`}
 
-                            className="flex gap-4 rounded-2xl bg-white p-4 shadow-sm"
 
-                          >
 
-                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
 
-                              {index + 1}
 
-                            </div>
 
 
 
-                            <p className="pt-1 text-sm leading-6 text-slate-700">
 
-                              {action}
+  function getStatusWidth(
 
-                            </p>
 
-                          </div>
 
-                        )
+    status?: string | null
 
-                      )}
 
-                  </div>
 
-                </div>
+  ) {
 
-              </div>
 
-            </section>
 
-          )}
+    const normalized =
 
 
 
+      normalizeStatus(status);
 
 
-        {/* ================================================================
 
-            MEASUREMENT VALIDATION WARNING
 
-           ================================================================ */}
 
 
 
-        {recommendation &&
+    switch (normalized) {
 
-          recommendation
 
-            .measurement_validation
 
-            .recommendation_blocked && (
+      case "GOOD":
 
-            <section className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm sm:p-8">
 
-              <div className="flex items-start gap-4">
 
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-600 text-xl text-white">
+      case "OPTIMAL":
 
-                  !
 
-                </div>
 
+      case "ADEQUATE":
 
 
-                <div>
 
-                  <p className="text-sm font-semibold uppercase tracking-wider text-red-700">
+        return "w-full";
 
-                    Important
 
-                  </p>
 
 
 
-                  <h2 className="mt-1 text-xl font-bold text-red-950">
 
-                    Verify Your Soil
 
-                    Measurements
+      case "MODERATE":
 
-                  </h2>
 
 
+        return "w-2/3";
 
-                  <p className="mt-3 text-sm leading-7 text-red-900">
 
-                    SoilGenie detected
 
-                    measurement issues
 
-                    that should be
 
-                    checked before using
 
-                    the crop results as
 
-                    planting guidance.
+      case "LOW":
 
-                  </p>
 
 
+      case "POOR":
 
-                  {recommendation
 
-                    .measurement_validation
 
-                    .critical_measurements
+        return "w-1/3";
 
-                    .length > 0 && (
 
-                    <div className="mt-5 space-y-3">
 
-                      {recommendation
 
-                        .measurement_validation
 
-                        .critical_measurements
 
-                        .map(
 
-                          (
+      case "CRITICAL":
 
-                            item,
 
-                            index
 
-                          ) => (
+        return "w-1/4";
 
-                            <div
 
-                              key={`${item.parameter}-${index}`}
 
-                              className="rounded-xl bg-white p-4"
 
-                            >
 
-                              <p className="font-semibold text-slate-900">
 
-                                {
 
-                                  item.parameter
+      default:
 
-                                }
 
-                              </p>
 
+        return "w-1/2";
 
 
-                              {item.message && (
 
-                                <p className="mt-1 text-sm leading-6 text-slate-600">
+    }
 
-                                  {
 
-                                    item.message
 
-                                  }
+  }
 
-                                </p>
 
-                              )}
 
-                            </div>
 
-                          )
 
-                        )}
 
-                    </div>
 
-                  )}
 
-                </div>
 
-              </div>
 
-            </section>
 
-          )}
+  function getCropDecisionLabel(
 
 
 
+    crop: CropRecommendation
 
 
-        {/* ================================================================
 
-            SOIL MEASUREMENTS
+  ) {
 
-           ================================================================ */}
 
 
+    if (
 
-        <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
 
-          <div>
 
-            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+      crop.automatic_recommendation
 
-              Your Soil
 
-            </p>
 
+    ) {
 
 
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
 
-              Soil Measurements
+      return "Recommended";
 
-            </h2>
 
 
+    }
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
 
-              These are the main soil
 
-              properties measured during
 
-              your soil test.
 
-            </p>
 
-          </div>
 
+    switch (
 
 
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
 
-            {parameters.map(
+      crop.decision
 
-              (parameter) => {
 
-                const style =
 
-                  getStatusClass(
+    ) {
 
-                    parameter.status
 
-                  );
 
+      case "CONDITIONAL":
 
 
-                return (
 
-                  <div
+        return "Conditional";
 
-                    key={
 
-                      parameter.name
 
-                    }
 
-                    className="rounded-2xl border bg-slate-50 p-5"
 
-                  >
 
-                    <div className="flex items-start justify-between gap-3">
 
-                      <div className="flex items-center gap-3">
+      case "HOLD":
 
-                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
 
-                          {
 
-                            parameter.icon
+        return "Review First";
 
-                          }
 
-                        </div>
 
 
 
-                        <div>
 
-                          <p className="font-bold text-slate-900">
 
-                            {
+      case "VERIFY_MEASUREMENTS":
 
-                              parameter.name
 
-                            }
 
-                          </p>
+        return "Verify Soil Test";
 
 
 
-                          <p className="mt-1 text-xs leading-5 text-slate-500">
 
-                            {getParameterMessage(
 
-                              parameter.name,
 
-                              parameter.status
 
-                            )}
+      case "DO_NOT_RECOMMEND":
 
-                          </p>
 
-                        </div>
 
-                      </div>
+        return "Not Recommended";
 
 
 
-                      {parameter.status && (
 
-                        <span
 
-                          className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold ${style.badge}`}
 
-                        >
 
-                          {getStatusLabel(
+      default:
 
-                            parameter.status
 
-                          )}
 
-                        </span>
+        return crop.decision
 
-                      )}
 
-                    </div>
 
+          .replace(/_/g, " ")
 
 
-                    <div className="mt-5">
 
-                      <span className="text-3xl font-bold text-slate-900">
+          .toLowerCase()
 
-                        {displayValue(
 
-                          parameter.value
 
-                        )}
+          .replace(
 
-                      </span>
 
 
+            /\b\w/g,
 
-                      {parameter.unit && (
 
-                        <span className="ml-1 text-sm text-slate-500">
 
-                          {
+            (letter) =>
 
-                            parameter.unit
 
-                          }
 
-                        </span>
+              letter.toUpperCase()
 
-                      )}
 
 
+          );
 
-                      {parameter.status && (
 
-                        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
 
-                          <div
+    }
 
-                            className={`h-full rounded-full transition-all ${style.icon} ${getStatusWidth(
 
-                              parameter.status
 
-                            )}`}
+  }
 
-                          />
 
-                        </div>
 
-                      )}
 
-                    </div>
 
-                  </div>
 
-                );
 
-              }
 
-            )}
 
-          </div>
 
 
+  /* ==========================================================================
 
-          <div className="mt-6 grid gap-4 border-t pt-6 sm:grid-cols-2">
+     DOWNLOAD PDF
 
-            <div className="rounded-2xl bg-slate-50 p-5">
+     ========================================================================== */
 
-              <p className="text-sm font-semibold text-slate-500">
 
-                Electrical
 
-                Conductivity
+  async function handleDownloadPdf() {
 
-              </p>
+    if (!id || !test) {
 
+      setPdfError("The soil report is not available for download.");
 
+      return;
 
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+    }
 
-                {displayValue(
 
-                  test.result
 
-                    ?.electrical_conductivity_ds_m
+    try {
 
-                )}
+      setDownloadingPdf(true);
 
+      setPdfError("");
 
 
-                <span className="ml-1 text-sm font-normal text-slate-500">
 
-                  dS/m
+      const response = await api.get(
 
-                </span>
+        `/reports/soil/${id}/pdf/`,
 
-              </p>
+        { responseType: "blob" }
 
-            </div>
+      );
 
 
 
-            <div className="rounded-2xl bg-slate-50 p-5">
+        response.headers["content-type"] || "application/pdf";
 
-              <p className="text-sm font-semibold text-slate-500">
 
-                Soil Temperature
 
-              </p>
+      const blob = new Blob([response.data], {
+  type: "application/pdf",});
 
+      const downloadUrl = window.URL.createObjectURL(blob);
 
+      const link = document.createElement("a");
 
-              <p className="mt-2 text-2xl font-bold text-slate-900">
 
-                {displayValue(
 
-                  test.result
+      const safeSampleId = (test.sample_id || "soil-report")
 
-                    ?.temperature_celsius
+        .replace(/[^a-zA-Z0-9-_]/g, "-");
 
-                )}
 
 
+      link.href = downloadUrl;
 
-                <span className="ml-1 text-sm font-normal text-slate-500">
+      link.download = `SoilGenie-Soil-Report-${safeSampleId}.pdf`;
 
-                  °C
 
-                </span>
 
-              </p>
+      document.body.appendChild(link);
 
-            </div>
+      link.click();
 
-          </div>
+      link.remove();
 
-        </section>
+      window.URL.revokeObjectURL(downloadUrl);
 
+    } catch (err: any) {
 
+      console.error("Unable to download soil report PDF:", err);
 
 
 
-        {/* ================================================================
+      let message =
 
-            GENERAL SOIL GUIDANCE
+        "Unable to download the PDF report. Please try again.";
 
-           ================================================================ */}
 
 
+      if (err?.response?.status === 401) {
 
-        {analysis && (
+        message =
 
-          <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
+          "Your session has expired. Please sign in again and retry the download.";
 
-            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+      } else if (err?.response?.status === 404) {
 
-              Soil Management
+        message =
 
-            </p>
+          "The PDF report could not be found for this soil test.";
 
+      }
 
 
-            <h2 className="mt-1 text-2xl font-bold text-slate-900">
 
-              General Guidance
+      setPdfError(message);
 
-            </h2>
+    } finally {
 
+      setDownloadingPdf(false);
 
+    }
 
-            <p className="mt-2 text-sm leading-6 text-slate-500">
+  }
 
-              Additional guidance from
 
-              the current SoilGenie soil
 
-              screening.
 
-            </p>
 
+  /* ==========================================================================
 
+     DERIVED DATA
 
-            <div className="mt-6 space-y-4">
+     ========================================================================== */
 
-              {analysis.recommendations && (
 
-                <GuidanceCard
 
-                  icon="🌱"
 
-                  title="General Advice"
 
-                  text={
 
-                    analysis.recommendations
 
-                  }
+  const overallStatus =
 
-                  className="border-green-200 bg-green-50"
 
-                />
 
-              )}
+    analysis?.overall_status;
 
 
 
-              {analysis.fertilizer_recommendation && (
 
-                <GuidanceCard
 
-                  icon="🧪"
 
-                  title="Nutrient Management"
 
-                  text={
+  const overallStyle =
 
-                    analysis.fertilizer_recommendation
 
-                  }
 
-                />
+    getStatusClass(
 
-              )}
 
 
+      overallStatus
 
-              {analysis.amendment_recommendation && (
 
-                <GuidanceCard
 
-                  icon="🌍"
+    );
 
-                  title="Soil Improvement"
 
-                  text={
 
-                    analysis.amendment_recommendation
 
-                  }
 
-                />
 
-              )}
 
 
 
-              {analysis.irrigation_recommendation && (
 
-                <GuidanceCard
 
-                  icon="💧"
+  const parameters = [
 
-                  title="Water & Irrigation"
 
-                  text={
 
-                    analysis.irrigation_recommendation
+    {
 
-                  }
 
-                />
 
-              )}
+      name: "Soil pH",
 
-            </div>
 
-          </section>
 
-        )}
+      value:
 
 
 
+        test?.result?.ph,
 
 
-        {/* ================================================================
 
-            RECOMMENDATION FALLBACK
+      unit: "",
 
-           ================================================================ */}
 
 
+      status:
 
-        {test.result &&
 
-          !recommendation &&
 
-          recommendationError && (
+        analysis?.ph_status,
 
-            <section className="rounded-3xl border border-yellow-200 bg-yellow-50 p-6">
 
-              <h2 className="font-bold text-yellow-950">
 
-                Crop guidance is
+      icon: "🌱",
 
-                temporarily unavailable
 
-              </h2>
 
+    },
 
 
-              <p className="mt-2 text-sm leading-6 text-yellow-800">
 
-                Your soil analysis is
 
-                still available above,
 
-                but the crop suitability
 
-                section could not be
 
-                loaded.
+    {
 
-              </p>
 
-            </section>
 
-          )}
+      name: "Nitrogen",
 
 
 
+      value:
 
 
-        {/* ================================================================
 
-            FARMER SUMMARY
+        test?.result
 
-           ================================================================ */}
 
 
+          ?.nitrogen_mg_kg,
 
-        <section className="rounded-3xl bg-slate-900 p-6 text-white shadow-sm sm:p-8">
 
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
 
-            <div className="max-w-2xl">
+      unit: "mg/kg",
 
-              <p className="text-sm font-semibold uppercase tracking-wider text-green-300">
 
-                Your SoilGenie Summary
 
-              </p>
+      status:
 
 
 
-              <h2 className="mt-2 text-2xl font-bold">
+        analysis?.nitrogen_status,
 
-                Better Soil.
 
-                Better Decisions.
 
-              </h2>
+      icon: "🌿",
 
 
 
-              <p className="mt-4 text-sm leading-7 text-slate-300">
+    },
 
-                This report provides
 
-                preliminary
 
-                decision-support from
 
-                your available soil
 
-                measurements. Use it
 
-                together with your
 
-                farming experience,
+    {
 
-                seasonal conditions and
 
-                locally appropriate
 
-                agricultural guidance.
+      name: "Phosphorus",
 
-              </p>
 
-            </div>
 
+      value:
 
 
-            <div className="text-4xl">
 
-              🌱
+        test?.result
 
-            </div>
 
-          </div>
 
+          ?.phosphorus_mg_kg,
 
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-2">
 
-            <div className="rounded-2xl bg-white/10 p-5">
+      unit: "mg/kg",
 
-              <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
 
-                Report ID
 
-              </p>
+      status:
 
 
 
-              <p className="mt-2 break-all font-mono text-sm text-white">
+        analysis?.phosphorus_status,
 
-                {test.test_id}
 
-              </p>
 
-            </div>
+      icon: "🌾",
 
 
 
-            <div className="rounded-2xl bg-white/10 p-5">
+    },
 
-              <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
 
-                Farm
 
-              </p>
 
 
 
-              <p className="mt-2 font-semibold text-white">
 
-                {test.farm_name}
+    {
 
-              </p>
 
-            </div>
 
-          </div>
+      name: "Potassium",
 
-        </section>
 
 
+      value:
 
 
 
-        {/* ================================================================
+        test?.result
 
-            FUTURE SHARING ACTIONS
 
-           ================================================================ */}
 
+          ?.potassium_mg_kg,
 
 
-        <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
 
-          <h2 className="text-xl font-bold text-slate-900">
+      unit: "mg/kg",
 
-            Share Your Soil Report
 
-          </h2>
 
+      status:
 
 
-          <p className="mt-2 text-sm leading-6 text-slate-500">
 
-            More ways to receive and
+        analysis?.potassium_status,
 
-            share your SoilGenie report
 
-            will be added as the
 
-            platform develops.
+      icon: "🌻",
 
-          </p>
 
 
+    },
 
-          <div className="mt-6 grid gap-3 sm:grid-cols-3">
-            <button
-              type="button"
-              onClick={handleDownloadPdf}
-              disabled={downloadingPdf}
-              className="rounded-2xl border border-green-700 bg-green-700 px-4 py-4 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              <span className="mr-1">
-                {downloadingPdf ? "⏳" : "📄"}
-              </span>
 
-              {downloadingPdf
-                ? "Generating PDF..."
-                : "Download PDF"}
 
-              <span className="mt-1 block text-xs font-normal text-green-100">
-                {downloadingPdf
-                  ? "Please wait"
-                  : "Save report"}
-              </span>
-            </button>
 
 
 
-            <ComingSoonButton
 
-              icon="💬"
+    {
 
-              label="Send by SMS"
 
-            />
 
+      name: "Moisture",
 
 
-            <ComingSoonButton
 
-              icon="🗣️"
+      value:
 
-              label="Hausa Report"
 
-            />
 
-          </div>
+        test?.result
 
-          {pdfError && (
-            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
-              {pdfError}
-            </div>
-          )}
 
-        </section>
 
+          ?.moisture_percent,
 
 
 
+      unit: "%",
 
-        {/* ================================================================
 
-            TECHNICAL VIEW
 
-           ================================================================ */}
+      status:
 
 
 
-        <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+        analysis?.moisture_status,
 
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 
-            <div>
 
-              <h2 className="font-bold text-slate-900">
+      icon: "💧",
 
-                Need More Detail?
 
-              </h2>
 
+    },
 
 
-              <p className="mt-1 text-sm leading-6 text-slate-500">
 
-                Agents and technical
 
-                users can view the full
 
-                soil analysis and crop
 
-                suitability breakdown.
 
-              </p>
+    {
 
-            </div>
 
 
+      name: "Organic Matter",
 
-            <button
 
-              type="button"
 
-              onClick={() =>
+      value:
 
-                navigate(
 
-                  `/agent/soil/tests/${test.id}`
 
-                )
+        test?.result
 
-              }
 
-              className="shrink-0 rounded-xl border border-green-700 bg-white px-5 py-3 text-sm font-semibold text-green-700 hover:bg-green-50"
 
-            >
+          ?.organic_matter_percent,
 
-              View Technical Analysis
 
-            </button>
 
-          </div>
+      unit: "%",
 
-        </section>
 
 
+      status:
 
 
 
-        {/* ================================================================
+        analysis
 
-            FOOTER
 
-           ================================================================ */}
 
+          ?.organic_matter_status,
 
 
-        <div className="pb-4 text-center">
 
-          <p className="mx-auto max-w-2xl text-xs leading-5 text-slate-400">
+      icon: "🌍",
 
-            SoilGenie provides
 
-            agricultural
 
-            decision-support based on
+    },
 
-            the soil measurements
 
-            available for this test.
 
-            Crop suitability and
+  ];
 
-            management guidance should
 
-            be interpreted alongside
 
-            local field conditions and
 
-            appropriate agronomic
 
-            advice.
 
-          </p>
 
 
 
-          <p className="mt-3 text-xs font-semibold text-green-700">
 
-            SoilGenie • Better Soil.
 
-            Better Decisions.
+  const cropRecommendations =
 
-          </p>
 
-        </div>
 
-      </div>
+    useMemo(() => {
 
-    </DashboardLayout>
 
-  );
+
+      if (!recommendation) {
+
+
+
+        return [];
+
+
+
+      }
+
+
+
+
+
+
+
+      return [
+
+
+
+        ...recommendation
+
+
+
+          .crop_recommendations
+
+
+
+          .recommended,
+
+
+
+
+
+
+
+        ...recommendation
+
+
+
+          .crop_recommendations
+
+
+
+          .conditional,
+
+
+
+
+
+
+
+        ...recommendation
+
+
+
+          .crop_recommendations
+
+
+
+          .hold,
+
+
+
+
+
+
+
+        ...recommendation
+
+
+
+          .crop_recommendations
+
+
+
+          .avoid,
+
+
+
+      ];
+
+
+
+    }, [recommendation]);
+
+
+
+
+
+
+
+
+
+
+
+  const sortedCrops =
+
+
+
+    useMemo(() => {
+
+
+
+      return [
+
+
+
+        ...cropRecommendations,
+
+
+
+      ].sort(
+
+
+
+        (a, b) =>
+
+
+
+          b.score - a.score
+
+
+
+      );
+
+
+
+    }, [cropRecommendations]);
+
+
+
+
+
+
+
+
+
+
+
+  const bestCrop =
+
+
+
+    recommendation?.best_crop ||
+
+
+
+    null;
+
+
+
+
+
+
+
+
+
+
+
+  const provisionalBestCrop =
+
+
+
+    recommendation
+
+
+
+      ?.provisional_best_crop ||
+
+
+
+    null;
+
+
+
+
+
+
+
+
+
+
+
+  const bestCropDetails =
+
+
+
+    sortedCrops.find(
+
+
+
+      (crop) =>
+
+
+
+        crop.crop === bestCrop
+
+
+
+    ) ||
+
+
+
+    sortedCrops.find(
+
+
+
+      (crop) =>
+
+
+
+        crop.crop ===
+
+
+
+        provisionalBestCrop
+
+
+
+    ) ||
+
+
+
+    null;
+
+
+
+
+
+
+
+
+
+
+
+  const otherCrops =
+
+
+
+    bestCropDetails
+
+
+
+      ? sortedCrops.filter(
+
+
+
+          (crop) =>
+
+
+
+            crop.crop !==
+
+
+
+            bestCropDetails.crop
+
+
+
+        )
+
+
+
+      : sortedCrops;
+
+
+
+
+
+
+
+
+
+
+
+  /* ==========================================================================
+
+
+
+     LOADING
+
+
+
+     ========================================================================== */
+
+
+
+
+
+
+
+  if (loading) {
+
+
+
+    return (
+
+
+
+      <DashboardLayout>
+
+
+
+        <div className="mx-auto max-w-4xl">
+
+
+
+          <div className="rounded-3xl border bg-white p-10 text-center shadow-sm">
+
+
+
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-green-700" />
+
+
+
+
+
+
+
+            <p className="mt-4 text-sm text-slate-500">
+
+
+
+              Preparing your soil
+
+
+
+              report...
+
+
+
+            </p>
+
+
+
+          </div>
+
+
+
+        </div>
+
+
+
+      </DashboardLayout>
+
+
+
+    );
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+  /* ==========================================================================
+
+
+
+     ERROR
+
+
+
+     ========================================================================== */
+
+
+
+
+
+
+
+  if (
+
+
+
+    error ||
+
+
+
+    !test
+
+
+
+  ) {
+
+
+
+    return (
+
+
+
+      <DashboardLayout>
+
+
+
+        <div className="mx-auto max-w-4xl">
+
+
+
+          <button
+
+
+
+            type="button"
+
+
+
+            onClick={() =>
+
+
+
+              navigate(
+
+
+
+                "/agent/soil/samples"
+
+
+
+              )
+
+
+
+            }
+
+
+
+            className="mb-6 text-sm font-semibold text-green-700 hover:text-green-800"
+
+
+
+          >
+
+
+
+            ← Back
+
+
+
+          </button>
+
+
+
+
+
+
+
+          <div className="rounded-3xl border border-red-200 bg-red-50 p-8">
+
+
+
+            <div className="flex items-start gap-4">
+
+
+
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 text-xl text-red-700">
+
+
+
+                !
+
+
+
+              </div>
+
+
+
+
+
+
+
+              <div>
+
+
+
+                <h1 className="text-xl font-bold text-red-900">
+
+
+
+                  Unable to load soil
+
+
+
+                  report
+
+
+
+                </h1>
+
+
+
+
+
+
+
+                <p className="mt-2 text-sm leading-6 text-red-700">
+
+
+
+                  {error ||
+
+
+
+                    "The requested soil report could not be found."}
+
+
+
+                </p>
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+        </div>
+
+
+
+      </DashboardLayout>
+
+
+
+    );
+
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
+  /* ==========================================================================
+
+
+
+     PAGE
+
+
+
+     ========================================================================== */
+
+
+
+
+
+
+
+  return (
+
+
+
+    <DashboardLayout>
+
+
+
+      <div className="mx-auto max-w-4xl space-y-6 pb-12">
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            TOP NAVIGATION
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <div className="flex items-center justify-between">
+
+
+
+          <button
+
+
+
+            type="button"
+
+
+
+            onClick={() =>
+
+
+
+              navigate(
+
+
+
+                `/agent/soil/samples/${test.sample}`
+
+
+
+              )
+
+
+
+            }
+
+
+
+            className="text-sm font-semibold text-green-700 hover:text-green-800"
+
+
+
+          >
+
+
+
+            ← Back
+
+
+
+          </button>
+
+
+
+
+
+
+
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
+
+
+
+            SoilGenie Report
+
+
+
+          </span>
+
+
+
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            REPORT HEADER
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-green-800 to-green-600 p-6 text-white shadow-lg sm:p-8">
+
+
+
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+
+
+
+            <div>
+
+
+
+              <div className="mb-3 inline-flex rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wider">
+
+
+
+                Farmer Soil Report
+
+
+
+              </div>
+
+
+
+
+
+
+
+              <h1 className="text-3xl font-bold sm:text-4xl">
+
+
+
+                Your Soil Health
+
+
+
+                Report
+
+
+
+              </h1>
+
+
+
+
+
+
+
+              <p className="mt-3 max-w-2xl text-sm leading-6 text-green-50 sm:text-base">
+
+
+
+                Understand your soil,
+
+
+
+                discover suitable crops
+
+
+
+                and see the most
+
+
+
+                important actions to
+
+
+
+                consider next.
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-white/15 text-4xl">
+
+
+
+              🌱
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+
+
+          <div className="mt-8 grid gap-3 text-sm sm:grid-cols-3">
+
+
+
+            <div className="rounded-2xl bg-white/10 p-4">
+
+
+
+              <p className="text-xs text-green-100">
+
+
+
+                Farm
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-1 font-bold">
+
+
+
+                {test.farm_name}
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="rounded-2xl bg-white/10 p-4">
+
+
+
+              <p className="text-xs text-green-100">
+
+
+
+                Sample
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-1 break-all font-bold">
+
+
+
+                {test.sample_id}
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="rounded-2xl bg-white/10 p-4">
+
+
+
+              <p className="text-xs text-green-100">
+
+
+
+                Report Date
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-1 font-bold">
+
+
+
+                {formatDate(
+
+
+
+                  test.tested_at ||
+
+
+
+                    test.created_at
+
+
+
+                )}
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            OVERALL SOIL CONDITION
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {analysis ? (
+
+
+
+          <section
+
+
+
+            className={`rounded-3xl border p-6 shadow-sm sm:p-8 ${overallStyle.card}`}
+
+
+
+          >
+
+
+
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+
+
+
+              <div
+
+
+
+                className={`flex h-20 w-20 shrink-0 items-center justify-center rounded-full text-3xl shadow-sm ${overallStyle.icon}`}
+
+
+
+              >
+
+
+
+                {getStatusIcon(
+
+
+
+                  overallStatus
+
+
+
+                )}
+
+
+
+              </div>
+
+
+
+
+
+
+
+              <div className="flex-1">
+
+
+
+                <p className="text-sm font-semibold uppercase tracking-wider opacity-70">
+
+
+
+                  Your Soil Condition
+
+
+
+                </p>
+
+
+
+
+
+
+
+                <div className="mt-1 flex flex-wrap items-center gap-3">
+
+
+
+                  <h2
+
+
+
+                    className={`text-3xl font-bold ${overallStyle.text}`}
+
+
+
+                  >
+
+
+
+                    {getStatusLabel(
+
+
+
+                      overallStatus
+
+
+
+                    )}
+
+
+
+                  </h2>
+
+
+
+
+
+
+
+                  <span
+
+
+
+                    className={`rounded-full border px-3 py-1 text-xs font-bold ${overallStyle.badge}`}
+
+
+
+                  >
+
+
+
+                    {overallStatus}
+
+
+
+                  </span>
+
+
+
+                </div>
+
+
+
+
+
+
+
+                {recommendation
+
+
+
+                  ?.farmer_summary ? (
+
+
+
+                  <p className="mt-3 text-sm leading-7 opacity-90">
+
+
+
+                    {
+
+
+
+                      recommendation.farmer_summary
+
+
+
+                    }
+
+
+
+                  </p>
+
+
+
+                ) : analysis.summary ? (
+
+
+
+                  <p className="mt-3 text-sm leading-7 opacity-90">
+
+
+
+                    {
+
+
+
+                      analysis.summary
+
+
+
+                    }
+
+
+
+                  </p>
+
+
+
+                ) : null}
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          </section>
+
+
+
+        ) : (
+
+
+
+          <section className="rounded-3xl border border-yellow-200 bg-yellow-50 p-6">
+
+
+
+            <div className="flex gap-4">
+
+
+
+              <div className="text-2xl">
+
+
+
+                🧠
+
+
+
+              </div>
+
+
+
+
+
+
+
+              <div>
+
+
+
+                <h2 className="font-bold text-yellow-900">
+
+
+
+                  SoilGenie analysis
+
+
+
+                  is not ready yet
+
+
+
+                </h2>
+
+
+
+
+
+
+
+                <p className="mt-2 text-sm leading-6 text-yellow-800">
+
+
+
+                  Your soil measurements
+
+
+
+                  have been recorded.
+
+
+
+                  SoilGenie will display
+
+
+
+                  your guidance once the
+
+
+
+                  analysis is available.
+
+
+
+                </p>
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          </section>
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            BEST CROP MATCH
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {recommendation && (
+
+
+
+          <section className="overflow-hidden rounded-3xl border border-green-200 bg-white shadow-sm">
+
+
+
+            <div className="border-b border-green-100 bg-green-50 p-6 sm:p-8">
+
+
+
+              <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+
+
+
+                Crop Match
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <h2 className="mt-1 text-2xl font-bold text-slate-900">
+
+
+
+                Crops That Match Your
+
+
+
+                Soil
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-2 text-sm leading-6 text-slate-600">
+
+
+
+                SoilGenie compared the
+
+
+
+                available soil
+
+
+
+                measurements with the
+
+
+
+                crops currently included
+
+
+
+                in its screening model.
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="p-6 sm:p-8">
+
+
+
+
+
+
+
+              {/* Safe recommendation */}
+
+
+
+
+
+
+
+              {bestCrop &&
+
+
+
+              bestCropDetails ? (
+
+
+
+                <div className="rounded-3xl border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50 p-6">
+
+
+
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
+
+
+                    <div className="flex items-center gap-4">
+
+
+
+                      <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-green-700 text-3xl text-white shadow-sm">
+
+
+
+                        🌾
+
+
+
+                      </div>
+
+
+
+
+
+
+
+                      <div>
+
+
+
+                        <p className="text-xs font-bold uppercase tracking-wider text-green-700">
+
+
+
+                          Best Crop Match
+
+
+
+                        </p>
+
+
+
+
+
+
+
+                        <h3 className="mt-1 text-3xl font-bold text-green-950">
+
+
+
+                          {
+
+
+
+                            bestCropDetails.crop
+
+
+
+                          }
+
+
+
+                        </h3>
+
+
+
+
+
+
+
+                        <p className="mt-1 text-sm font-medium text-green-800">
+
+
+
+                          {getStatusLabel(
+
+
+
+                            bestCropDetails.suitability
+
+
+
+                          )}
+
+
+
+                        </p>
+
+
+
+                      </div>
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <div className="rounded-2xl bg-white px-6 py-4 text-center shadow-sm">
+
+
+
+                      <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+
+
+
+                        Suitability Score
+
+
+
+                      </p>
+
+
+
+
+
+
+
+                      <p className="mt-1 text-3xl font-bold text-green-800">
+
+
+
+                        {
+
+
+
+                          bestCropDetails.score
+
+
+
+                        }
+
+
+
+                        <span className="text-sm font-medium text-slate-400">
+
+
+
+                          /100
+
+
+
+                        </span>
+
+
+
+                      </p>
+
+
+
+                    </div>
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                  <div className="mt-5 rounded-2xl bg-white/70 p-5">
+
+
+
+                    <p className="text-sm leading-7 text-green-900">
+
+
+
+                      Based on the
+
+
+
+                      available soil
+
+
+
+                      measurements,{" "}
+
+
+
+                      <strong>
+
+
+
+                        {
+
+
+
+                          bestCropDetails.crop
+
+
+
+                        }
+
+
+
+                      </strong>{" "}
+
+
+
+                      currently has the
+
+
+
+                      strongest safe
+
+
+
+                      recommendation
+
+
+
+                      among the crops
+
+
+
+                      assessed by
+
+
+
+                      SoilGenie.
+
+
+
+                    </p>
+
+
+
+                  </div>
+
+
+
+                </div>
+
+
+
+              ) : provisionalBestCrop &&
+
+
+
+                bestCropDetails ? (
+
+
+
+                <div className="rounded-3xl border border-blue-200 bg-blue-50 p-6">
+
+
+
+                  <div className="flex items-start gap-4">
+
+
+
+                    <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white">
+
+
+
+                      🌾
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <div>
+
+
+
+                      <p className="text-xs font-bold uppercase tracking-wider text-blue-700">
+
+
+
+                        Provisional Best
+
+
+
+                        Match
+
+
+
+                      </p>
+
+
+
+
+
+
+
+                      <h3 className="mt-1 text-2xl font-bold text-blue-950">
+
+
+
+                        {
+
+
+
+                          provisionalBestCrop
+
+
+
+                        }
+
+
+
+                      </h3>
+
+
+
+
+
+
+
+                      <p className="mt-3 text-sm leading-7 text-blue-900">
+
+
+
+                        This crop has the
+
+
+
+                        strongest
+
+
+
+                        provisional match,
+
+
+
+                        but SoilGenie is
+
+
+
+                        not presenting it
+
+
+
+                        as an automatic
+
+
+
+                        planting
+
+
+
+                        recommendation.
+
+
+
+                        Review the soil
+
+
+
+                        test issues below
+
+
+
+                        first.
+
+
+
+                      </p>
+
+
+
+                    </div>
+
+
+
+                  </div>
+
+
+
+                </div>
+
+
+
+              ) : (
+
+
+
+                <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-6">
+
+
+
+                  <h3 className="font-bold text-yellow-950">
+
+
+
+                    No crop is currently
+
+
+
+                    being automatically
+
+
+
+                    recommended
+
+
+
+                  </h3>
+
+
+
+
+
+
+
+                  <p className="mt-2 text-sm leading-6 text-yellow-800">
+
+
+
+                    Review the soil
+
+
+
+                    measurements and
+
+
+
+                    recommended next
+
+
+
+                    steps before making
+
+
+
+                    a planting decision.
+
+
+
+                  </p>
+
+
+
+                </div>
+
+
+
+              )}
+
+
+
+
+
+
+
+
+
+
+
+              {/* Other crop matches */}
+
+
+
+
+
+
+
+              {otherCrops.length > 0 && (
+
+
+
+                <div className="mt-8">
+
+
+
+                  <h3 className="text-lg font-bold text-slate-900">
+
+
+
+                    Other Crop Matches
+
+
+
+                  </h3>
+
+
+
+
+
+
+
+                  <p className="mt-1 text-sm text-slate-500">
+
+
+
+                    Other crops assessed
+
+
+
+                    against the same soil
+
+
+
+                    measurements.
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
+
+
+
+                    {otherCrops.map(
+
+
+
+                      (
+
+
+
+                        crop,
+
+
+
+                        index
+
+
+
+                      ) => (
+
+
+
+                        <FarmerCropCard
+
+
+
+                          key={`${crop.crop}-${index}`}
+
+
+
+                          crop={crop}
+
+
+
+                          statusLabel={getStatusLabel(
+
+
+
+                            crop.suitability
+
+
+
+                          )}
+
+
+
+                          decisionLabel={getCropDecisionLabel(
+
+
+
+                            crop
+
+
+
+                          )}
+
+
+
+                        />
+
+
+
+                      )
+
+
+
+                    )}
+
+
+
+                  </div>
+
+
+
+                </div>
+
+
+
+              )}
+
+
+
+
+
+
+
+
+
+
+
+              {/* Safety notice */}
+
+
+
+
+
+
+
+              <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+
+
+
+                <div className="flex gap-3">
+
+
+
+                  <div className="text-lg">
+
+
+
+                    ℹ️
+
+
+
+                  </div>
+
+
+
+
+
+
+
+                  <p className="text-xs leading-6 text-slate-500">
+
+
+
+                    Crop matches are
+
+
+
+                    preliminary
+
+
+
+                    decision-support
+
+
+
+                    results based on the
+
+
+
+                    available soil
+
+
+
+                    measurements and
+
+
+
+                    configured crop
+
+
+
+                    profiles. Consider
+
+
+
+                    local weather,
+
+
+
+                    planting season,
+
+
+
+                    variety, field
+
+
+
+                    conditions and
+
+
+
+                    locally appropriate
+
+
+
+                    agronomic advice
+
+
+
+                    before planting.
+
+
+
+                  </p>
+
+
+
+                </div>
+
+
+
+              </div>
+
+
+
+            </div>
+
+
+
+          </section>
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            WHAT IS GOOD / WHAT NEEDS ATTENTION
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {recommendation && (
+
+
+
+          <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
+
+
+
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+
+
+
+              Your Soil at a Glance
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <h2 className="mt-1 text-2xl font-bold text-slate-900">
+
+
+
+              What Is Good & What
+
+
+
+              Needs Attention
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <div className="mt-6 grid gap-5 md:grid-cols-2">
+
+
+
+              <FarmerListCard
+
+
+
+                icon="✓"
+
+
+
+                title="What Is Good"
+
+
+
+                items={
+
+
+
+                  recommendation
+
+
+
+                    .soil_conditions
+
+
+
+                    .strengths
+
+
+
+                }
+
+
+
+                emptyText="No specific soil strengths were identified from the current measurements."
+
+
+
+                className="border-green-200 bg-green-50"
+
+
+
+                iconClassName="bg-green-600 text-white"
+
+
+
+                titleClassName="text-green-950"
+
+
+
+              />
+
+
+
+
+
+
+
+              <FarmerListCard
+
+
+
+                icon="!"
+
+
+
+                title="What Needs Attention"
+
+
+
+                items={[
+
+
+
+                  ...recommendation
+
+
+
+                    .soil_conditions
+
+
+
+                    .limitations,
+
+
+
+
+
+
+
+                  ...recommendation
+
+
+
+                    .soil_conditions
+
+
+
+                    .risks,
+
+
+
+                ]}
+
+
+
+                emptyText="No major soil limitations or risks were identified from the current measurements."
+
+
+
+                className="border-orange-200 bg-orange-50"
+
+
+
+                iconClassName="bg-orange-500 text-white"
+
+
+
+                titleClassName="text-orange-950"
+
+
+
+              />
+
+
+
+            </div>
+
+
+
+          </section>
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            NEXT STEPS
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {recommendation &&
+
+
+
+          recommendation
+
+
+
+            .soil_conditions
+
+
+
+            .actions.length > 0 && (
+
+
+
+            <section className="rounded-3xl border border-blue-200 bg-blue-50 p-6 shadow-sm sm:p-8">
+
+
+
+              <div className="flex items-start gap-4">
+
+
+
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-blue-600 text-2xl text-white">
+
+
+
+                  →
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <div className="flex-1">
+
+
+
+                  <p className="text-sm font-semibold uppercase tracking-wider text-blue-700">
+
+
+
+                    Action Plan
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                  <h2 className="mt-1 text-2xl font-bold text-blue-950">
+
+
+
+                    What You Should Do
+
+
+
+                    Next
+
+
+
+                  </h2>
+
+
+
+
+
+
+
+                  <p className="mt-2 text-sm leading-6 text-blue-800">
+
+
+
+                    Based on this soil
+
+
+
+                    screening, these are
+
+
+
+                    the main actions to
+
+
+
+                    consider.
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                  <div className="mt-6 space-y-3">
+
+
+
+                    {recommendation
+
+
+
+                      .soil_conditions
+
+
+
+                      .actions.map(
+
+
+
+                        (
+
+
+
+                          action,
+
+
+
+                          index
+
+
+
+                        ) => (
+
+
+
+                          <div
+
+
+
+                            key={`${action}-${index}`}
+
+
+
+                            className="flex gap-4 rounded-2xl bg-white p-4 shadow-sm"
+
+
+
+                          >
+
+
+
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+
+
+
+                              {index + 1}
+
+
+
+                            </div>
+
+
+
+
+
+
+
+                            <p className="pt-1 text-sm leading-6 text-slate-700">
+
+
+
+                              {action}
+
+
+
+                            </p>
+
+
+
+                          </div>
+
+
+
+                        )
+
+
+
+                      )}
+
+
+
+                  </div>
+
+
+
+                </div>
+
+
+
+              </div>
+
+
+
+            </section>
+
+
+
+          )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            MEASUREMENT VALIDATION WARNING
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {recommendation &&
+
+
+
+          recommendation
+
+
+
+            .measurement_validation
+
+
+
+            .recommendation_blocked && (
+
+
+
+            <section className="rounded-3xl border border-red-200 bg-red-50 p-6 shadow-sm sm:p-8">
+
+
+
+              <div className="flex items-start gap-4">
+
+
+
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-600 text-xl text-white">
+
+
+
+                  !
+
+
+
+                </div>
+
+
+
+
+
+
+
+                <div>
+
+
+
+                  <p className="text-sm font-semibold uppercase tracking-wider text-red-700">
+
+
+
+                    Important
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                  <h2 className="mt-1 text-xl font-bold text-red-950">
+
+
+
+                    Verify Your Soil
+
+
+
+                    Measurements
+
+
+
+                  </h2>
+
+
+
+
+
+
+
+                  <p className="mt-3 text-sm leading-7 text-red-900">
+
+
+
+                    SoilGenie detected
+
+
+
+                    measurement issues
+
+
+
+                    that should be
+
+
+
+                    checked before using
+
+
+
+                    the crop results as
+
+
+
+                    planting guidance.
+
+
+
+                  </p>
+
+
+
+
+
+
+
+                  {recommendation
+
+
+
+                    .measurement_validation
+
+
+
+                    .critical_measurements
+
+
+
+                    .length > 0 && (
+
+
+
+                    <div className="mt-5 space-y-3">
+
+
+
+                      {recommendation
+
+
+
+                        .measurement_validation
+
+
+
+                        .critical_measurements
+
+
+
+                        .map(
+
+
+
+                          (
+
+
+
+                            item,
+
+
+
+                            index
+
+
+
+                          ) => (
+
+
+
+                            <div
+
+
+
+                              key={`${item.parameter}-${index}`}
+
+
+
+                              className="rounded-xl bg-white p-4"
+
+
+
+                            >
+
+
+
+                              <p className="font-semibold text-slate-900">
+
+
+
+                                {
+
+
+
+                                  item.parameter
+
+
+
+                                }
+
+
+
+                              </p>
+
+
+
+
+
+
+
+                              {item.message && (
+
+
+
+                                <p className="mt-1 text-sm leading-6 text-slate-600">
+
+
+
+                                  {
+
+
+
+                                    item.message
+
+
+
+                                  }
+
+
+
+                                </p>
+
+
+
+                              )}
+
+
+
+                            </div>
+
+
+
+                          )
+
+
+
+                        )}
+
+
+
+                    </div>
+
+
+
+                  )}
+
+
+
+                </div>
+
+
+
+              </div>
+
+
+
+            </section>
+
+
+
+          )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            SOIL MEASUREMENTS
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
+
+
+
+          <div>
+
+
+
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+
+
+
+              Your Soil
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <h2 className="mt-1 text-2xl font-bold text-slate-900">
+
+
+
+              Soil Measurements
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+
+
+
+              These are the main soil
+
+
+
+              properties measured during
+
+
+
+              your soil test.
+
+
+
+            </p>
+
+
+
+          </div>
+
+
+
+
+
+
+
+          <div className="mt-6 grid gap-4 sm:grid-cols-2">
+
+
+
+            {parameters.map(
+
+
+
+              (parameter) => {
+
+
+
+                const style =
+
+
+
+                  getStatusClass(
+
+
+
+                    parameter.status
+
+
+
+                  );
+
+
+
+
+
+
+
+                return (
+
+
+
+                  <div
+
+
+
+                    key={
+
+
+
+                      parameter.name
+
+
+
+                    }
+
+
+
+                    className="rounded-2xl border bg-slate-50 p-5"
+
+
+
+                  >
+
+
+
+                    <div className="flex items-start justify-between gap-3">
+
+
+
+                      <div className="flex items-center gap-3">
+
+
+
+                        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+
+
+
+                          {
+
+
+
+                            parameter.icon
+
+
+
+                          }
+
+
+
+                        </div>
+
+
+
+
+
+
+
+                        <div>
+
+
+
+                          <p className="font-bold text-slate-900">
+
+
+
+                            {
+
+
+
+                              parameter.name
+
+
+
+                            }
+
+
+
+                          </p>
+
+
+
+
+
+
+
+                          <p className="mt-1 text-xs leading-5 text-slate-500">
+
+
+
+                            {getParameterMessage(
+
+
+
+                              parameter.name,
+
+
+
+                              parameter.status
+
+
+
+                            )}
+
+
+
+                          </p>
+
+
+
+                        </div>
+
+
+
+                      </div>
+
+
+
+
+
+
+
+                      {parameter.status && (
+
+
+
+                        <span
+
+
+
+                          className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-bold ${style.badge}`}
+
+
+
+                        >
+
+
+
+                          {getStatusLabel(
+
+
+
+                            parameter.status
+
+
+
+                          )}
+
+
+
+                        </span>
+
+
+
+                      )}
+
+
+
+                    </div>
+
+
+
+
+
+
+
+                    <div className="mt-5">
+
+
+
+                      <span className="text-3xl font-bold text-slate-900">
+
+
+
+                        {displayValue(
+
+
+
+                          parameter.value
+
+
+
+                        )}
+
+
+
+                      </span>
+
+
+
+
+
+
+
+                      {parameter.unit && (
+
+
+
+                        <span className="ml-1 text-sm text-slate-500">
+
+
+
+                          {
+
+
+
+                            parameter.unit
+
+
+
+                          }
+
+
+
+                        </span>
+
+
+
+                      )}
+
+
+
+
+
+
+
+                      {parameter.status && (
+
+
+
+                        <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-200">
+
+
+
+                          <div
+
+
+
+                            className={`h-full rounded-full transition-all ${style.icon} ${getStatusWidth(
+
+
+
+                              parameter.status
+
+
+
+                            )}`}
+
+
+
+                          />
+
+
+
+                        </div>
+
+
+
+                      )}
+
+
+
+                    </div>
+
+
+
+                  </div>
+
+
+
+                );
+
+
+
+              }
+
+
+
+            )}
+
+
+
+          </div>
+
+
+
+
+
+
+
+          <div className="mt-6 grid gap-4 border-t pt-6 sm:grid-cols-2">
+
+
+
+            <div className="rounded-2xl bg-slate-50 p-5">
+
+
+
+              <p className="text-sm font-semibold text-slate-500">
+
+
+
+                Electrical
+
+
+
+                Conductivity
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-2 text-2xl font-bold text-slate-900">
+
+
+
+                {displayValue(
+
+
+
+                  test.result
+
+
+
+                    ?.electrical_conductivity_ds_m
+
+
+
+                )}
+
+
+
+
+
+
+
+                <span className="ml-1 text-sm font-normal text-slate-500">
+
+
+
+                  dS/m
+
+
+
+                </span>
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="rounded-2xl bg-slate-50 p-5">
+
+
+
+              <p className="text-sm font-semibold text-slate-500">
+
+
+
+                Soil Temperature
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-2 text-2xl font-bold text-slate-900">
+
+
+
+                {displayValue(
+
+
+
+                  test.result
+
+
+
+                    ?.temperature_celsius
+
+
+
+                )}
+
+
+
+
+
+
+
+                <span className="ml-1 text-sm font-normal text-slate-500">
+
+
+
+                  °C
+
+
+
+                </span>
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            GENERAL SOIL GUIDANCE
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {analysis && (
+
+
+
+          <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
+
+
+
+            <p className="text-sm font-semibold uppercase tracking-wider text-green-700">
+
+
+
+              Soil Management
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <h2 className="mt-1 text-2xl font-bold text-slate-900">
+
+
+
+              General Guidance
+
+
+
+            </h2>
+
+
+
+
+
+
+
+            <p className="mt-2 text-sm leading-6 text-slate-500">
+
+
+
+              Additional guidance from
+
+
+
+              the current SoilGenie soil
+
+
+
+              screening.
+
+
+
+            </p>
+
+
+
+
+
+
+
+            <div className="mt-6 space-y-4">
+
+
+
+              {analysis.recommendations && (
+
+
+
+                <GuidanceCard
+
+
+
+                  icon="🌱"
+
+
+
+                  title="General Advice"
+
+
+
+                  text={
+
+
+
+                    analysis.recommendations
+
+
+
+                  }
+
+
+
+                  className="border-green-200 bg-green-50"
+
+
+
+                />
+
+
+
+              )}
+
+
+
+
+
+
+
+              {analysis.fertilizer_recommendation && (
+
+
+
+                <GuidanceCard
+
+
+
+                  icon="🧪"
+
+
+
+                  title="Nutrient Management"
+
+
+
+                  text={
+
+
+
+                    analysis.fertilizer_recommendation
+
+
+
+                  }
+
+
+
+                />
+
+
+
+              )}
+
+
+
+
+
+
+
+              {analysis.amendment_recommendation && (
+
+
+
+                <GuidanceCard
+
+
+
+                  icon="🌍"
+
+
+
+                  title="Soil Improvement"
+
+
+
+                  text={
+
+
+
+                    analysis.amendment_recommendation
+
+
+
+                  }
+
+
+
+                />
+
+
+
+              )}
+
+
+
+
+
+
+
+              {analysis.irrigation_recommendation && (
+
+
+
+                <GuidanceCard
+
+
+
+                  icon="💧"
+
+
+
+                  title="Water & Irrigation"
+
+
+
+                  text={
+
+
+
+                    analysis.irrigation_recommendation
+
+
+
+                  }
+
+
+
+                />
+
+
+
+              )}
+
+
+
+            </div>
+
+
+
+          </section>
+
+
+
+        )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            RECOMMENDATION FALLBACK
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        {test.result &&
+
+
+
+          !recommendation &&
+
+
+
+          recommendationError && (
+
+
+
+            <section className="rounded-3xl border border-yellow-200 bg-yellow-50 p-6">
+
+
+
+              <h2 className="font-bold text-yellow-950">
+
+
+
+                Crop guidance is
+
+
+
+                temporarily unavailable
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-2 text-sm leading-6 text-yellow-800">
+
+
+
+                Your soil analysis is
+
+
+
+                still available above,
+
+
+
+                but the crop suitability
+
+
+
+                section could not be
+
+
+
+                loaded.
+
+
+
+              </p>
+
+
+
+            </section>
+
+
+
+          )}
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            FARMER SUMMARY
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <section className="rounded-3xl bg-slate-900 p-6 text-white shadow-sm sm:p-8">
+
+
+
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:justify-between">
+
+
+
+            <div className="max-w-2xl">
+
+
+
+              <p className="text-sm font-semibold uppercase tracking-wider text-green-300">
+
+
+
+                Your SoilGenie Summary
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <h2 className="mt-2 text-2xl font-bold">
+
+
+
+                Better Soil.
+
+
+
+                Better Decisions.
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-4 text-sm leading-7 text-slate-300">
+
+
+
+                This report provides
+
+
+
+                preliminary
+
+
+
+                decision-support from
+
+
+
+                your available soil
+
+
+
+                measurements. Use it
+
+
+
+                together with your
+
+
+
+                farming experience,
+
+
+
+                seasonal conditions and
+
+
+
+                locally appropriate
+
+
+
+                agricultural guidance.
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="text-4xl">
+
+
+
+              🌱
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+
+
+
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-2">
+
+
+
+            <div className="rounded-2xl bg-white/10 p-5">
+
+
+
+              <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
+
+
+
+                Report ID
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-2 break-all font-mono text-sm text-white">
+
+
+
+                {test.test_id}
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <div className="rounded-2xl bg-white/10 p-5">
+
+
+
+              <p className="text-xs font-semibold uppercase tracking-wide text-green-300">
+
+
+
+                Farm
+
+
+
+              </p>
+
+
+
+
+
+
+
+              <p className="mt-2 font-semibold text-white">
+
+
+
+                {test.farm_name}
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+          </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            FUTURE SHARING ACTIONS
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <section className="rounded-3xl border bg-white p-6 shadow-sm sm:p-8">
+
+
+
+          <h2 className="text-xl font-bold text-slate-900">
+
+
+
+            Share Your Soil Report
+
+
+
+          </h2>
+
+
+
+
+
+
+
+          <p className="mt-2 text-sm leading-6 text-slate-500">
+
+
+
+            More ways to receive and
+
+
+
+            share your SoilGenie report
+
+
+
+            will be added as the
+
+
+
+            platform develops.
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+
+            <button
+
+              type="button"
+
+              onClick={handleDownloadPdf}
+
+              disabled={downloadingPdf}
+
+              className="rounded-2xl border border-green-700 bg-green-700 px-4 py-4 text-sm font-semibold text-white transition hover:bg-green-800 disabled:cursor-not-allowed disabled:opacity-60"
+
+            >
+
+              <span className="mr-1">
+
+                {downloadingPdf ? "⏳" : "📄"}
+
+              </span>
+
+
+
+              {downloadingPdf
+
+                ? "Generating PDF..."
+
+                : "Download PDF"}
+
+
+
+              <span className="mt-1 block text-xs font-normal text-green-100">
+
+                {downloadingPdf
+
+                  ? "Please wait"
+
+                  : "Save report"}
+
+              </span>
+
+            </button>
+
+
+
+
+
+
+
+            <ComingSoonButton
+
+
+
+              icon="💬"
+
+
+
+              label="Send by SMS"
+
+
+
+            />
+
+
+
+
+
+
+
+            <ComingSoonButton
+
+
+
+              icon="🗣️"
+
+
+
+              label="Hausa Report"
+
+
+
+            />
+
+
+
+          </div>
+
+
+
+          {pdfError && (
+
+            <div className="mt-4 rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+
+              {pdfError}
+
+            </div>
+
+          )}
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            TECHNICAL VIEW
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <section className="rounded-3xl border border-slate-200 bg-slate-50 p-6">
+
+
+
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+
+
+            <div>
+
+
+
+              <h2 className="font-bold text-slate-900">
+
+
+
+                Need More Detail?
+
+
+
+              </h2>
+
+
+
+
+
+
+
+              <p className="mt-1 text-sm leading-6 text-slate-500">
+
+
+
+                Agents and technical
+
+
+
+                users can view the full
+
+
+
+                soil analysis and crop
+
+
+
+                suitability breakdown.
+
+
+
+              </p>
+
+
+
+            </div>
+
+
+
+
+
+
+
+            <button
+
+
+
+              type="button"
+
+
+
+              onClick={() =>
+
+
+
+                navigate(
+
+
+
+                  `/agent/soil/tests/${test.id}`
+
+
+
+                )
+
+
+
+              }
+
+
+
+              className="shrink-0 rounded-xl border border-green-700 bg-white px-5 py-3 text-sm font-semibold text-green-700 hover:bg-green-50"
+
+
+
+            >
+
+
+
+              View Technical Analysis
+
+
+
+            </button>
+
+
+
+          </div>
+
+
+
+        </section>
+
+
+
+
+
+
+
+
+
+
+
+        {/* ================================================================
+
+
+
+            FOOTER
+
+
+
+           ================================================================ */}
+
+
+
+
+
+
+
+        <div className="pb-4 text-center">
+
+
+
+          <p className="mx-auto max-w-2xl text-xs leading-5 text-slate-400">
+
+
+
+            SoilGenie provides
+
+
+
+            agricultural
+
+
+
+            decision-support based on
+
+
+
+            the soil measurements
+
+
+
+            available for this test.
+
+
+
+            Crop suitability and
+
+
+
+            management guidance should
+
+
+
+            be interpreted alongside
+
+
+
+            local field conditions and
+
+
+
+            appropriate agronomic
+
+
+
+            advice.
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <p className="mt-3 text-xs font-semibold text-green-700">
+
+
+
+            SoilGenie • Better Soil.
+
+
+
+            Better Decisions.
+
+
+
+          </p>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </DashboardLayout>
+
+
+
+  );
+
+
 
 }
 
@@ -3547,193 +7089,387 @@ export default function FarmerSoilReport() {
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   FARMER CROP CARD
 
-   ========================================================================== */
+
+   FARMER CROP CARD
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 function FarmerCropCard({
 
-  crop,
 
-  statusLabel,
 
-  decisionLabel,
+  crop,
+
+
+
+  statusLabel,
+
+
+
+  decisionLabel,
+
+
 
 }: {
 
-  crop: CropRecommendation;
 
-  statusLabel: string;
 
-  decisionLabel: string;
+  crop: CropRecommendation;
+
+
+
+  statusLabel: string;
+
+
+
+  decisionLabel: string;
+
+
 
 }) {
 
-  const recommended =
 
-    crop.automatic_recommendation;
 
+  const recommended =
 
 
-  const blocked =
 
-    crop.decision ===
+    crop.automatic_recommendation;
 
-    "VERIFY_MEASUREMENTS";
 
 
 
-  const notRecommended =
 
-    crop.decision ===
 
-    "DO_NOT_RECOMMEND";
 
+  const blocked =
 
 
-  let cardClass =
 
-    "border-slate-200 bg-slate-50";
+    crop.decision ===
 
 
 
-  if (recommended) {
+    "VERIFY_MEASUREMENTS";
 
-    cardClass =
 
-      "border-green-200 bg-green-50";
 
-  } else if (blocked) {
 
-    cardClass =
 
-      "border-blue-200 bg-blue-50";
 
-  } else if (
 
-    crop.decision ===
+  const notRecommended =
 
-    "CONDITIONAL"
 
-  ) {
 
-    cardClass =
+    crop.decision ===
 
-      "border-yellow-200 bg-yellow-50";
 
-  } else if (
 
-    crop.decision === "HOLD"
+    "DO_NOT_RECOMMEND";
 
-  ) {
 
-    cardClass =
 
-      "border-orange-200 bg-orange-50";
 
-  } else if (
 
-    notRecommended
 
-  ) {
 
-    cardClass =
+  let cardClass =
 
-      "border-red-200 bg-red-50";
 
-  }
 
+    "border-slate-200 bg-slate-50";
 
 
-  return (
 
-    <div
 
-      className={`rounded-2xl border p-5 ${cardClass}`}
 
-    >
 
-      <div className="flex items-start justify-between gap-4">
 
-        <div>
+  if (recommended) {
 
-          <p className="text-lg font-bold text-slate-900">
 
-            {crop.crop}
 
-          </p>
+    cardClass =
 
 
 
-          <p className="mt-1 text-xs font-semibold text-slate-500">
+      "border-green-200 bg-green-50";
 
-            {statusLabel}
 
-          </p>
 
-        </div>
+  } else if (blocked) {
 
 
 
-        <div className="text-right">
+    cardClass =
 
-          <p className="text-2xl font-bold text-slate-900">
 
-            {crop.score}
 
-          </p>
+      "border-blue-200 bg-blue-50";
 
 
 
-          <p className="text-xs text-slate-400">
+  } else if (
 
-            /100
 
-          </p>
 
-        </div>
+    crop.decision ===
 
-      </div>
 
 
+    "CONDITIONAL"
 
-      <div className="mt-4 flex flex-wrap gap-2">
 
-        <span className="rounded-full border border-white/80 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
 
-          {decisionLabel}
+  ) {
 
-        </span>
 
 
+    cardClass =
 
-        <span className="rounded-full border border-white/80 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
 
-          {crop.confidence} confidence
 
-        </span>
+      "border-yellow-200 bg-yellow-50";
 
-      </div>
 
 
+  } else if (
 
-      {crop.reason && (
 
-        <p className="mt-4 text-xs leading-6 text-slate-600">
 
-          {crop.reason}
+    crop.decision === "HOLD"
 
-        </p>
 
-      )}
 
-    </div>
+  ) {
 
-  );
+
+
+    cardClass =
+
+
+
+      "border-orange-200 bg-orange-50";
+
+
+
+  } else if (
+
+
+
+    notRecommended
+
+
+
+  ) {
+
+
+
+    cardClass =
+
+
+
+      "border-red-200 bg-red-50";
+
+
+
+  }
+
+
+
+
+
+
+
+  return (
+
+
+
+    <div
+
+
+
+      className={`rounded-2xl border p-5 ${cardClass}`}
+
+
+
+    >
+
+
+
+      <div className="flex items-start justify-between gap-4">
+
+
+
+        <div>
+
+
+
+          <p className="text-lg font-bold text-slate-900">
+
+
+
+            {crop.crop}
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <p className="mt-1 text-xs font-semibold text-slate-500">
+
+
+
+            {statusLabel}
+
+
+
+          </p>
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div className="text-right">
+
+
+
+          <p className="text-2xl font-bold text-slate-900">
+
+
+
+            {crop.score}
+
+
+
+          </p>
+
+
+
+
+
+
+
+          <p className="text-xs text-slate-400">
+
+
+
+            /100
+
+
+
+          </p>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+
+
+
+
+      <div className="mt-4 flex flex-wrap gap-2">
+
+
+
+        <span className="rounded-full border border-white/80 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+
+
+
+          {decisionLabel}
+
+
+
+        </span>
+
+
+
+
+
+
+
+        <span className="rounded-full border border-white/80 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+
+
+
+          {crop.confidence} confidence
+
+
+
+        </span>
+
+
+
+      </div>
+
+
+
+
+
+
+
+      {crop.reason && (
+
+
+
+        <p className="mt-4 text-xs leading-6 text-slate-600">
+
+
+
+          {crop.reason}
+
+
+
+        </p>
+
+
+
+      )}
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
 
@@ -3741,131 +7477,263 @@ function FarmerCropCard({
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   FARMER LIST CARD
 
-   ========================================================================== */
+
+   FARMER LIST CARD
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 function FarmerListCard({
 
-  icon,
 
-  title,
 
-  items,
+  icon,
 
-  emptyText,
 
-  className,
 
-  iconClassName,
+  title,
 
-  titleClassName,
+
+
+  items,
+
+
+
+  emptyText,
+
+
+
+  className,
+
+
+
+  iconClassName,
+
+
+
+  titleClassName,
+
+
 
 }: {
 
-  icon: string;
 
-  title: string;
 
-  items: string[];
+  icon: string;
 
-  emptyText: string;
 
-  className: string;
 
-  iconClassName: string;
+  title: string;
 
-  titleClassName: string;
+
+
+  items: string[];
+
+
+
+  emptyText: string;
+
+
+
+  className: string;
+
+
+
+  iconClassName: string;
+
+
+
+  titleClassName: string;
+
+
 
 }) {
 
-  return (
 
-    <div
 
-      className={`rounded-2xl border p-6 ${className}`}
-
-    >
-
-      <div className="flex items-center gap-3">
-
-        <div
-
-          className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${iconClassName}`}
-
-        >
-
-          {icon}
-
-        </div>
+  return (
 
 
 
-        <h3
-
-          className={`font-bold ${titleClassName}`}
-
-        >
-
-          {title}
-
-        </h3>
-
-      </div>
+    <div
 
 
 
-      {items.length > 0 ? (
-
-        <ul className="mt-5 space-y-3">
-
-          {items.map(
-
-            (item, index) => (
-
-              <li
-
-                key={`${title}-${index}`}
-
-                className="flex gap-3 text-sm leading-6 text-slate-700"
-
-              >
-
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+      className={`rounded-2xl border p-6 ${className}`}
 
 
 
-                <span>
+    >
 
-                  {item}
 
-                </span>
 
-              </li>
+      <div className="flex items-center gap-3">
 
-            )
 
-          )}
 
-        </ul>
+        <div
 
-      ) : (
 
-        <p className="mt-5 text-sm leading-6 text-slate-600">
 
-          {emptyText}
+          className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${iconClassName}`}
 
-        </p>
 
-      )}
 
-    </div>
+        >
 
-  );
+
+
+          {icon}
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <h3
+
+
+
+          className={`font-bold ${titleClassName}`}
+
+
+
+        >
+
+
+
+          {title}
+
+
+
+        </h3>
+
+
+
+      </div>
+
+
+
+
+
+
+
+      {items.length > 0 ? (
+
+
+
+        <ul className="mt-5 space-y-3">
+
+
+
+          {items.map(
+
+
+
+            (item, index) => (
+
+
+
+              <li
+
+
+
+                key={`${title}-${index}`}
+
+
+
+                className="flex gap-3 text-sm leading-6 text-slate-700"
+
+
+
+              >
+
+
+
+                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-current" />
+
+
+
+
+
+
+
+                <span>
+
+
+
+                  {item}
+
+
+
+                </span>
+
+
+
+              </li>
+
+
+
+            )
+
+
+
+          )}
+
+
+
+        </ul>
+
+
+
+      ) : (
+
+
+
+        <p className="mt-5 text-sm leading-6 text-slate-600">
+
+
+
+          {emptyText}
+
+
+
+        </p>
+
+
+
+      )}
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
 
@@ -3873,77 +7741,155 @@ function FarmerListCard({
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   GUIDANCE CARD
 
-   ========================================================================== */
+
+   GUIDANCE CARD
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 function GuidanceCard({
 
-  icon,
 
-  title,
 
-  text,
+  icon,
 
-  className = "border-slate-200 bg-white",
+
+
+  title,
+
+
+
+  text,
+
+
+
+  className = "border-slate-200 bg-white",
+
+
 
 }: {
 
-  icon: string;
 
-  title: string;
 
-  text: string;
+  icon: string;
 
-  className?: string;
+
+
+  title: string;
+
+
+
+  text: string;
+
+
+
+  className?: string;
+
+
 
 }) {
 
-  return (
 
-    <div
 
-      className={`rounded-2xl border p-6 ${className}`}
-
-    >
-
-      <div className="flex gap-4">
-
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
-
-          {icon}
-
-        </div>
+  return (
 
 
 
-        <div>
-
-          <h3 className="font-bold text-slate-900">
-
-            {title}
-
-          </h3>
+    <div
 
 
 
-          <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-600">
+      className={`rounded-2xl border p-6 ${className}`}
 
-            {text}
 
-          </p>
 
-        </div>
+    >
 
-      </div>
 
-    </div>
 
-  );
+      <div className="flex gap-4">
+
+
+
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white text-xl shadow-sm">
+
+
+
+          {icon}
+
+
+
+        </div>
+
+
+
+
+
+
+
+        <div>
+
+
+
+          <h3 className="font-bold text-slate-900">
+
+
+
+            {title}
+
+
+
+          </h3>
+
+
+
+
+
+
+
+          <p className="mt-2 whitespace-pre-wrap text-sm leading-7 text-slate-600">
+
+
+
+            {text}
+
+
+
+          </p>
+
+
+
+        </div>
+
+
+
+      </div>
+
+
+
+    </div>
+
+
+
+  );
+
+
 
 }
 
@@ -3951,60 +7897,122 @@ function GuidanceCard({
 
 
 
+
+
+
+
+
+
 /* ==========================================================================
 
-   COMING SOON BUTTON
 
-   ========================================================================== */
+
+   COMING SOON BUTTON
+
+
+
+   ========================================================================== */
+
+
+
+
 
 
 
 function ComingSoonButton({
 
-  icon,
 
-  label,
+
+  icon,
+
+
+
+  label,
+
+
 
 }: {
 
-  icon: string;
 
-  label: string;
+
+  icon: string;
+
+
+
+  label: string;
+
+
 
 }) {
 
-  return (
 
-    <button
 
-      type="button"
-
-      disabled
-
-      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-400"
-
-    >
-
-      <span className="mr-1">
-
-        {icon}
-
-      </span>
+  return (
 
 
 
-      {label}
+    <button
 
 
 
-      <span className="mt-1 block text-xs font-normal">
+      type="button"
 
-        Coming soon
 
-      </span>
 
-    </button>
+      disabled
 
-  );
+
+
+      className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-semibold text-slate-400"
+
+
+
+    >
+
+
+
+      <span className="mr-1">
+
+
+
+        {icon}
+
+
+
+      </span>
+
+
+
+
+
+
+
+      {label}
+
+
+
+
+
+
+
+      <span className="mt-1 block text-xs font-normal">
+
+
+
+        Coming soon
+
+
+
+      </span>
+
+
+
+    </button>
+
+
+
+  );
+
+
 
 }

@@ -10,7 +10,6 @@ import {
   Leaf,
   Loader2,
   MapPinned,
-  Plus,
   RefreshCw,
   Sprout,
   TestTube2,
