@@ -1,9 +1,4 @@
-import {
-  BrowserRouter,
-  Link,
-  Route,
-  Routes,
-} from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
 import Layout from "./components/layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -43,15 +38,21 @@ import FarmerSoilReport from "./pages/FarmerSoilReport";
 // Notifications
 import Notifications from "./pages/Notifications";
 
-// weather
+// Weather
 import Weather from "./pages/Weather";
 
+// Admin
+import AdminFarmers from "./pages/AdminFarmers";
+import AdminFarmerProfile from "./pages/AdminFarmerProfile";
+import AdminFarmProfile from "./pages/AdminFarmProfile";
+import AdminFarms from "./pages/AdminFarms";
+import AdminAgents from "./pages/AdminAgents";
+import AdminAgentProfile from "./pages/AdminAgentProfile";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* ============================================================
             LANDING PAGE
         ============================================================ */}
@@ -65,21 +66,13 @@ function App() {
           }
         />
 
-
         {/* ============================================================
             AUTHENTICATION
         ============================================================ */}
 
-        <Route
-          path="/login"
-          element={<Login />}
-        />
+        <Route path="/login" element={<Login />} />
 
-        <Route
-          path="/register"
-          element={<Register />}
-        />
-
+        <Route path="/register" element={<Register />} />
 
         {/* ============================================================
             AGENT DASHBOARD
@@ -94,9 +87,8 @@ function App() {
           }
         />
 
-
         {/* ============================================================
-            FARMERS
+            AGENT FARMERS
         ============================================================ */}
 
         <Route
@@ -126,18 +118,21 @@ function App() {
           }
         />
 
-        <Route
-  path="/agent/weather"
-  element={
-    <ProtectedRoute>
-      <Weather />
-    </ProtectedRoute>
-  }
-/>
+        {/* ============================================================
+            WEATHER
+        ============================================================ */}
 
+        <Route
+          path="/agent/weather"
+          element={
+            <ProtectedRoute>
+              <Weather />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ============================================================
-            FARMS
+            AGENT FARMS
         ============================================================ */}
 
         <Route
@@ -166,7 +161,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         {/* ============================================================
             SOIL MANAGEMENT
@@ -226,7 +220,6 @@ function App() {
           }
         />
 
-
         {/* ============================================================
             REPORTS
         ============================================================ */}
@@ -250,14 +243,13 @@ function App() {
         />
 
         <Route
-  path="/farmer/reports/soil/:id"
-  element={
-    <ProtectedRoute>
-      <FarmerSoilReport />
-    </ProtectedRoute>
-  }
-/>
-
+          path="/farmer/reports/soil/:id"
+          element={
+            <ProtectedRoute>
+              <FarmerSoilReport />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ============================================================
             NOTIFICATIONS
@@ -272,7 +264,6 @@ function App() {
           }
         />
 
-
         {/* ============================================================
             FARMER DASHBOARD
         ============================================================ */}
@@ -285,7 +276,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         {/* ============================================================
             ADMIN DASHBOARD
@@ -300,6 +290,63 @@ function App() {
           }
         />
 
+        {/* ============================================================
+            ADMIN FARMER MANAGEMENT
+        ============================================================ */}
+
+        <Route
+          path="/admin/farmers"
+          element={
+            <ProtectedRoute>
+              <AdminFarmers />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN FARMER PROFILE */}
+        <Route
+          path="/admin/farmers/:id"
+          element={
+            <ProtectedRoute>
+              <AdminFarmerProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ADMIN FARM PROFILE */}
+        <Route
+          path="/admin/farms/:id"
+          element={
+            <ProtectedRoute>
+              <AdminFarmProfile />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/farms"
+          element={
+            <ProtectedRoute>
+              <AdminFarms />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/agents"
+          element={
+            <ProtectedRoute>
+              <AdminAgents />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/agents/:id"
+          element={
+            <ProtectedRoute>
+              <AdminAgentProfile />
+            </ProtectedRoute>
+          }
+        />
 
         {/* ============================================================
             FALLBACK / 404
@@ -310,10 +357,7 @@ function App() {
           element={
             <div className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
               <div className="text-center">
-
-                <h1 className="text-4xl font-bold text-slate-900">
-                  404
-                </h1>
+                <h1 className="text-4xl font-bold text-slate-900">404</h1>
 
                 <p className="mt-3 text-slate-600">
                   The page you are looking for does not exist.
@@ -325,16 +369,13 @@ function App() {
                 >
                   Back to Dashboard
                 </Link>
-
               </div>
             </div>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
 }
-
 
 export default App;
