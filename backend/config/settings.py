@@ -407,16 +407,27 @@ FRONTEND_URL = config(
     default="http://localhost:5173",
 ).rstrip("/")
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    FRONTEND_URL,
-]
+CORS_ALLOWED_ORIGINS = list(
+    dict.fromkeys([
+        "http://localhost:5173",
+        FRONTEND_URL,
+        "https://soilgenie-platform.onrender.com",
+        "https://soilgenie.com.ng",
+        "https://www.soilgenie.com.ng",
+    ])
+)
 
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = [
-    "http://localhost:5173",
-    FRONTEND_URL,
-]
+
+CSRF_TRUSTED_ORIGINS = list(
+    dict.fromkeys([
+        "http://localhost:5173",
+        FRONTEND_URL,
+        "https://soilgenie-platform.onrender.com",
+        "https://soilgenie.com.ng",
+        "https://www.soilgenie.com.ng",
+    ])
+)
 # ============================================================
 # PRODUCTION SECURITY
 # ============================================================
