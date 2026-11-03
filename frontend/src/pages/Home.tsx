@@ -1,4 +1,5 @@
 import Hero from "../components/home/Hero";
+import ProductShowcase from "../components/home/ProductShowcase";
 import PlatformFeatures from "../components/home/PlatformFeatures";
 import Statistics from "../components/home/Statistics";
 import HowItWorks from "../components/home/HowItWorks";
@@ -11,6 +12,8 @@ export default function Home() {
   return (
     <>
       <Hero />
+
+      <ProductShowcase />
 
       <PlatformFeatures />
 
