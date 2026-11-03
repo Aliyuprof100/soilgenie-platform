@@ -1,317 +1,82 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { ArrowRight, CheckCircle2, FlaskConical, MapPinned, CloudSun } from "lucide-react";
 
 import DashboardPreview from "./DashboardPreview";
 import { Button } from "../ui";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-emerald-100">
+    <section className="relative isolate overflow-hidden bg-[#f7faf6]">
+      <div className="pointer-events-none absolute -left-32 top-12 h-96 w-96 rounded-full bg-[#c9ead7]/45 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-0 h-[28rem] w-[28rem] rounded-full bg-[#d8f1ed]/60 blur-3xl" />
 
-      {/* ================================================================ */}
-      {/* BACKGROUND DECORATIONS */}
-      {/* ================================================================ */}
-
-      <div className="pointer-events-none absolute left-0 top-20 h-72 w-72 rounded-full bg-green-300/20 blur-3xl" />
-
-      <div className="pointer-events-none absolute bottom-0 right-0 h-96 w-96 rounded-full bg-emerald-300/20 blur-3xl" />
-
-      <div className="pointer-events-none absolute left-1/2 top-1/3 h-64 w-64 -translate-x-1/2 rounded-full bg-lime-200/10 blur-3xl" />
-
-
-      {/* ================================================================ */}
-      {/* HERO CONTENT */}
-      {/* ================================================================ */}
-
-      <div className="relative mx-auto flex min-h-[90vh] max-w-7xl flex-col items-center justify-between gap-16 px-6 py-16 lg:flex-row lg:gap-12 lg:py-20">
-
-        {/* ============================================================ */}
-        {/* LEFT SIDE */}
-        {/* ============================================================ */}
-
+      <div className="relative mx-auto grid min-h-[700px] max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-[1.02fr_0.98fr] lg:py-20">
         <motion.div
-          className="w-full max-w-2xl"
-          initial={{
-            opacity: 0,
-            x: -60,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{
-            duration: 0.8,
-          }}
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65 }}
+          className="max-w-2xl"
         >
-
-          {/* Product Badge */}
-
-          <div className="inline-flex items-center gap-2 rounded-full border border-green-200 bg-white/80 px-5 py-2 text-sm font-semibold text-green-700 shadow-sm backdrop-blur">
-
-            <span className="text-base">
-              🌱
-            </span>
-
-            <span>
-              Soil Intelligence for Nigerian Agriculture
-            </span>
-
+          <div className="inline-flex items-center gap-2 rounded-full border border-[#b8dfc8] bg-white/85 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#176b45] shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-[#16a36a]" />
+            Soil intelligence for better farming decisions
           </div>
 
-
-          {/* Main Heading */}
-
-          <h1 className="mt-7 text-5xl font-extrabold leading-[1.05] tracking-tight text-slate-950 md:text-6xl lg:text-7xl">
-
-            Every Farming
-            <br />
-
-            Decision Starts
-            <br />
-
-            <span className="text-green-700">
-              with Better Data.
-            </span>
-
+          <h1 className="mt-7 text-5xl font-black leading-[1.04] tracking-[-0.045em] text-[#102417] sm:text-6xl lg:text-[4.35rem]">
+            Understand your soil.
+            <span className="mt-2 block text-[#168b5b]">Make every decision count.</span>
           </h1>
 
-
-          {/* Description */}
-
-          <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600 md:text-xl">
-
-            SoilGenie helps farmers and agricultural field teams understand
-            their soil, monitor farms, interpret weather conditions and turn
-            field data into practical decisions for better farming.
-
+          <p className="mt-7 max-w-xl text-lg leading-8 text-slate-600">
+            SoilGenie brings soil measurements, farm information and weather context together to help farmers and agricultural teams make more informed decisions.
           </p>
 
-
-          {/* CTA */}
-
-          <div className="mt-9 flex flex-wrap items-center gap-4">
-
+          <div className="mt-9 flex flex-wrap gap-3">
             <Link to="/register">
-              <Button>
-                Get Started
-              </Button>
+              <Button>Get started <ArrowRight className="ml-2 h-4 w-4" /></Button>
             </Link>
-
             <Link to="/login">
-              <Button variant="secondary">
-                Sign In
-              </Button>
+              <Button variant="secondary">Sign in</Button>
             </Link>
-
           </div>
 
-
-          {/* Trust Message */}
-
-          <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-slate-500">
-
-            <span className="flex items-center gap-2">
-              <span className="text-green-600">
-                ✓
-              </span>
-
-              Built for Nigerian farms
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="text-green-600">
-                ✓
-              </span>
-
-              Farm GPS intelligence
-            </span>
-
-            <span className="flex items-center gap-2">
-              <span className="text-green-600">
-                ✓
-              </span>
-
-              Soil & weather intelligence
-            </span>
-
+          <div className="mt-9 grid gap-3 border-t border-slate-200 pt-6 sm:grid-cols-3">
+            <div className="flex items-start gap-2.5">
+              <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-[#168b5b]" />
+              <span className="text-sm font-semibold leading-5 text-slate-700">Soil assessment</span>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <MapPinned className="mt-0.5 h-5 w-5 shrink-0 text-[#168b5b]" />
+              <span className="text-sm font-semibold leading-5 text-slate-700">Farm profiles and location</span>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <CloudSun className="mt-0.5 h-5 w-5 shrink-0 text-[#168b5b]" />
+              <span className="text-sm font-semibold leading-5 text-slate-700">Weather context</span>
+            </div>
           </div>
-
-
-          {/* ========================================================== */}
-          {/* PRODUCT TRACTION */}
-          {/* ========================================================== */}
-
-          <div className="mt-12 grid max-w-xl grid-cols-3 gap-5 border-t border-slate-200 pt-8">
-
-            <div>
-
-              <h3 className="text-2xl font-extrabold text-green-700 md:text-3xl">
-                10K+
-              </h3>
-
-              <p className="mt-1 text-xs leading-5 text-slate-500 md:text-sm">
-                People Reached
-              </p>
-
-            </div>
-
-
-            <div className="border-l border-slate-200 pl-5">
-
-              <h3 className="text-2xl font-extrabold text-green-700 md:text-3xl">
-                1,000+
-              </h3>
-
-              <p className="mt-1 text-xs leading-5 text-slate-500 md:text-sm">
-                Soil Tests
-              </p>
-
-            </div>
-
-
-            <div className="border-l border-slate-200 pl-5">
-
-              <h3 className="text-2xl font-extrabold text-green-700 md:text-3xl">
-                25–30%
-              </h3>
-
-              <p className="mt-1 text-xs leading-5 text-slate-500 md:text-sm">
-                Reported Yield Gains
-              </p>
-
-            </div>
-
-          </div>
-
+          <p className="mt-5 flex items-center gap-2 text-xs leading-5 text-slate-500">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-[#168b5b]" />
+            Designed around the needs of Nigerian farmers and field teams.
+          </p>
         </motion.div>
-
-
-        {/* ============================================================ */}
-        {/* RIGHT SIDE — PRODUCT PREVIEW */}
-        {/* ============================================================ */}
 
         <motion.div
-          className="relative w-full max-w-xl"
-          initial={{
-            opacity: 0,
-            x: 60,
-          }}
-          animate={{
-            opacity: 1,
-            x: 0,
-          }}
-          transition={{
-            duration: 0.8,
-            delay: 0.2,
-          }}
+          initial={{ opacity: 0, x: 28 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.7, delay: 0.12 }}
+          className="relative mx-auto w-full max-w-[620px]"
         >
-
-          {/* Decorative glow */}
-
-          <div className="absolute inset-0 -z-10 rounded-[2rem] bg-green-300/20 blur-3xl" />
-
-
-          {/* Dashboard */}
-
-          <div className="relative">
-
+          <div className="absolute -inset-5 -z-10 rounded-[2.5rem] bg-gradient-to-br from-[#b9e4ca]/60 to-[#d9f1ec]/50 blur-2xl" />
+          <div className="rounded-[1.8rem] border border-white bg-white/90 p-2 shadow-[0_28px_80px_-35px_rgba(13,65,36,0.35)] sm:p-4">
             <DashboardPreview />
-
-
-            {/* Floating Product Badge */}
-
-            <motion.div
-              className="absolute -bottom-5 -left-5 hidden rounded-2xl border border-white/70 bg-white/95 p-4 shadow-xl backdrop-blur sm:block"
-              initial={{
-                opacity: 0,
-                y: 20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.6,
-                delay: 1,
-              }}
-            >
-
-              <div className="flex items-center gap-3">
-
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
-                  🌱
-                </div>
-
-                <div>
-
-                  <p className="text-xs font-medium text-slate-500">
-                    SoilGenie Intelligence
-                  </p>
-
-                  <p className="text-sm font-bold text-slate-900">
-                    Data → Insight → Action
-                  </p>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-
-
-            {/* Floating Nigeria Badge */}
-
-            <motion.div
-              className="absolute -right-4 -top-5 hidden rounded-2xl border border-white/70 bg-white/95 px-4 py-3 shadow-xl backdrop-blur sm:block"
-              initial={{
-                opacity: 0,
-                y: -20,
-              }}
-              animate={{
-                opacity: 1,
-                y: 0,
-              }}
-              transition={{
-                duration: 0.6,
-                delay: 1.1,
-              }}
-            >
-
-              <div className="flex items-center gap-2">
-
-                <span className="text-lg">
-                  🇳🇬
-                </span>
-
-                <div>
-
-                  <p className="text-xs text-slate-500">
-                    Operating Geography
-                  </p>
-
-                  <p className="text-sm font-bold text-slate-900">
-                    Nigeria
-                  </p>
-
-                </div>
-
-              </div>
-
-            </motion.div>
-
           </div>
-
+          <div className="absolute -bottom-5 left-4 hidden rounded-2xl border border-slate-100 bg-white px-4 py-3 shadow-xl sm:block">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">SoilGenie workflow</p>
+            <p className="mt-1 text-sm font-bold text-[#102417]">Data <span className="text-[#168b5b]">→</span> Insight <span className="text-[#168b5b]">→</span> Action</p>
+          </div>
         </motion.div>
-
       </div>
-
-
-      {/* ================================================================ */}
-      {/* BOTTOM TRANSITION */}
-      {/* ================================================================ */}
-
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white/70 to-transparent" />
-
     </section>
   );
 }
