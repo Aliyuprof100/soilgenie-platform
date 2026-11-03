@@ -6,8 +6,15 @@ export default function Footer() {
     <footer className="bg-[#08240f] text-white">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_0.8fr_0.8fr]">
         <div>
-          <div className="inline-flex rounded-2xl bg-[#061d0b] p-3 ring-1 ring-white/10">
-            <img src="/soilgenie-full-logo.jpg" alt="SoilGenie Ltd" className="h-24 w-40 object-cover object-center" />
+          <div className="inline-flex items-center gap-4">
+            <img
+              src="/soilgenie-mark.png"
+              alt="SoilGenie symbol"
+              className="h-16 w-16 object-contain"
+              width="64"
+              height="64"
+            />
+            <span className="text-3xl font-extrabold tracking-tight text-white">SoilGenie Ltd</span>
           </div>
           <p className="mt-6 max-w-md text-sm leading-7 text-green-100/75">
             Soil and farm intelligence designed to help farmers, field teams and agricultural organisations make better-informed decisions.
